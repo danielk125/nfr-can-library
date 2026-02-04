@@ -28,19 +28,36 @@ enum class Endianness {
     bigEndian
 };
 
+struct ICAN_Signal_DataBuf {
+    std::array<uint8_t, 8> buf;
+    uint8_t data_length;
+};
+
 struct ICAN_Signal {
     virtual ~ICAN_Signal() = default;
 
     virtual void decode(const std::array<uint8_t, 8>& data) = 0;
 
     virtual void encode(std::array<uint8_t, 8>& data) const = 0;
+
+    virtual ICAN_Signal_DataBuf toBuf() const = 0;
+};
+
+struct CAN_Signal_config {
+    uint8_t startBit;
+    uint8_t length;
+    double factor;
+    double offset;
 };
 
 template <typename T>
 class CAN_Signal : public ICAN_Signal {
 public:
     CAN_Signal(uint8_t startBit, uint8_t length, double factor, double offset, bool isSigned = false, Endianness endian = Endianness::littleEndian) :
-    _startBit(startBit), _length(length), _factor(factor), _offset(offset), _isSigned(isSigned), _endian(endian), _sRawValue(0) {}
+        _startBit(startBit), _length(length), _factor(factor), _offset(offset), _isSigned(isSigned), _endian(endian), _sRawValue(0) {}
+
+    CAN_Signal(CAN_Signal_config& cfg, bool isSigned = false, Endianness endian = Endianness::littleEndian) : 
+        CAN_Signal(cfg.startBit, cfg.length, cfg.factor, cfg.offset, isSigned, endian) {}
 
     uint8_t startBit() { return _startBit; }
     uint8_t length() { return _length; }
@@ -50,6 +67,29 @@ public:
     RawSignalValue getRawValue() { return _sRawValue; }
 
     T get() const { return _sValue; }
+
+    
+    ICAN_Signal_DataBuf toBuf() const override {
+        T data = get();
+
+        uint64_t temp = 0;
+        uint8_t length = static_cast<uint8_t>(sizeof(T));
+        std::memcpy(&temp, &data, length);
+
+        std::array<uint8_t, 8> buf {};
+
+        for (int i = 0; i < 8; i++){
+            buf[7 - i] = static_cast<uint8_t>(temp % 0xFF);
+            temp >>= 8;
+        }
+
+        ICAN_Signal_DataBuf dataBuf;
+        dataBuf.buf = buf;
+        dataBuf.data_length = length;
+
+        return dataBuf;
+    }
+    
 
     void set(T val) { _sValue = val; }
 
@@ -128,11 +168,10 @@ struct ICAN_Message {
     virtual ~ICAN_Message() = default;
     virtual MsgKey key() const = 0;
     virtual uint8_t length() const = 0;
-    virtual bool isRX() const = 0;
 
     virtual void decode_from(const CAN_Frame& frame) = 0;
 
-    virtual CAN_Frame encode_to_frame() const = 0;
+    virtual void encode_to_frame(CAN_Frame& frame) const = 0;
 };
 
 
@@ -160,7 +199,9 @@ public:
     }
 
     bool send(const ICAN_Message& msg) {
-        return _can.send(msg.encode_to_frame());
+        CAN_Frame fr;
+        msg.encode_to_frame(fr);
+        return _can.send(fr);
     }
 
     uint32_t get_time() {
@@ -180,7 +221,24 @@ public:
     }
 };
 
-template<size_t num_signals>
+struct RX_can_msg_config {
+    CAN_Bus& bus;
+    uint32_t id;
+    bool extended;
+    uint8_t length;
+    std::function<void()> callback_func{};
+};
+
+struct TX_can_msg_config {
+    CAN_Bus& bus;
+    uint32_t id; 
+    bool extended; 
+    uint8_t length; 
+    uint32_t period; 
+    VirtualTimerGroup& timerGroup;
+};
+
+template<size_t num_signals, bool RX> // add bool for rx
 class CAN_Message : public ICAN_Message {
 public:
 
@@ -204,7 +262,9 @@ public:
                     length, 
                     std::function<void()>{}, // default to void
                     std::forward<Ps>(signals)...) 
-    {}
+    {
+        static_assert(RX, "TX constructor called for RX message!");
+    }
 
     // Constructor for RX message with callback
     template <class... Ps>
@@ -215,10 +275,10 @@ public:
         _length(length), 
         _callback_function(std::move(callback_function)), 
         _signals{ std::static_pointer_cast<ICAN_Signal>(std::forward<Ps>(signals))... },
-        _isRX(true),
         _last_recv_time(0)
     {
         static_assert(sizeof...(signals) == num_signals, "wrong number of signals");
+        static_assert(RX, "TX constructor called for RX message!");
         static_assert((is_shared_ptr_to_ican_signal<std::decay_t<Ps>>::value && ...),
                   "Signals must be shared_ptr to ICAN_Signal-derived");
         _bus.register_message(*this);
@@ -233,78 +293,89 @@ public:
         _length(length), 
         _transmit_timer(period, [this]() { _bus.send(*this); }, VirtualTimer::Type::kRepeating),
         _signals{ std::static_pointer_cast<ICAN_Signal>(std::forward<Ps>(signals))... },
-        _isRX(false)
+        _last_recv_time(0)
     {
         static_assert(sizeof...(signals) == num_signals, "wrong number of signals");
+        static_assert(!RX, "RX constructor called for TX message!");
         static_assert((is_shared_ptr_to_ican_signal<std::decay_t<Ps>>::value && ...),
                   "Signals must be shared_ptr to ICAN_Signal-derived");
         timerGroup.AddTimer(_transmit_timer);
     }
 
+    template <class... Ps>
+    CAN_Message(RX_can_msg_config& cfg, Ps&&... signals) : 
+        CAN_Message(cfg.bus, cfg.id, cfg.extended, cfg.length, cfg.callback_func, std::forward<Ps>(signals)...) 
+    {
+        static_assert(RX, "Cannot give RX config struct to TX message!");
+    }
+
+    template <class... Ps>
+    CAN_Message(TX_can_msg_config& cfg, Ps&&... signals) :
+        CAN_Message(cfg.bus, cfg.id, cfg.extended, cfg.length, cfg.period, cfg.timerGroup, std::forward<Ps>(signals)...)
+    {
+        static_assert(!RX, "Cannot give TX config struct to RX message!");
+    }
+
     ~CAN_Message() override {
-        if (_isRX) _bus.unregister_message(*this);
-        else TX_disable();
+        if constexpr (RX){
+            _bus.unregister_message(*this);
+        } else {
+            TX_disable();
+        }
     }
 
     MsgKey key() const override { return {_id, _extended}; }
     uint32_t id() { return _id; }
     uint8_t length() const override { return _length; }
     bool extended() { return _extended; }
-    bool isRX() const override { return _isRX; }
 
-    void decode_from(const CAN_Frame& frame){
-        std::array<uint8_t, 8> data = frame._data;
+    void decode_from(const CAN_Frame& frame) override {
+        if constexpr (RX) {
+            std::array<uint8_t, 8> data = frame._data;
 
-        uint64_t tmp = 0;
-        std::memcpy(&tmp, data.data(), sizeof(tmp));
-        _raw = tmp;
+            uint64_t tmp = 0;
+            std::memcpy(&tmp, data.data(), sizeof(tmp));
+            _raw = tmp;
 
-        for (int i = 0; i < num_signals; i++){
-            _signals.at(i)->decode(data);
-        }
+            for (int i = 0; i < num_signals; i++){
+                _signals.at(i)->decode(data);
+            }
 
-        if (_isRX && _callback_function) { _callback_function(); }
+            if (_callback_function) { _callback_function(); }
 
-        //_last_recv_time = _bus.get_time();
+            _last_recv_time = _bus.get_time();
+        } 
     }
 
-    CAN_Frame encode_to_frame() const {
-        CAN_Frame fr;
+    void encode_to_frame(CAN_Frame& frame) const override {
+        if constexpr(!RX){
+            frame._id = _id;
+            frame._extendedId = _extended;
+            frame._length = _length;
 
-        fr._id = _id;
-        fr._extendedId = _extended;
-        fr._length = _length;
+            std::array<uint8_t, 8> data {};
+            for (int i = 0; i < num_signals; i++){
+                _signals.at(i)->encode(data);
+            }
 
-        std::array<uint8_t, 8> data {};
-        for (int i = 0; i < num_signals; i++){
-            _signals.at(i)->encode(data);
+            frame._data = data;
         }
-
-        fr._data = data;
-        return fr;
     }
 
-    bool TX_enable() {
-        if (!_isRX) {
+    void TX_enable() {
+        if constexpr (!RX) {
             _transmit_timer.Enable();
-            return true;
         }
-        return false;
     }
 
-    bool TX_disable() {
-        if (!_isRX) {
+    void TX_disable() {
+        if constexpr (!RX) {
             _transmit_timer.Disable();
-            return true;
         }
-        return false;
     }
 
     uint32_t getLastRecvTimeMS() {
-        if (_isRX) 
-            return _last_recv_time;
-        else 
-            return 0;
+        return _last_recv_time;
     }
 
 private:
@@ -316,7 +387,6 @@ private:
     std::function<void(void)> _callback_function;
     std::array<std::shared_ptr<ICAN_Signal>, num_signals> _signals;
 
-    bool _isRX;
     uint32_t _last_recv_time;
     uint64_t _raw;
     VirtualTimer _transmit_timer;
@@ -329,19 +399,18 @@ private:
     They are purely for enhancing readability.
     You still should use the associated constructor for RX or TX messages.
 */
-#define RX_CAN_Message_Callback(num_signals) CAN_Message<num_signals>
+#define RX_CAN_Message(num_signals) CAN_Message<num_signals, true>
 
-#define RX_CAN_Message(num_signals) CAN_Message<num_signals>
-
-#define TX_CAN_Message(num_signals) CAN_Message<num_signals>
+#define TX_CAN_Message(num_signals) CAN_Message<num_signals, false>
 
 /*
-    IMPORTANT
-    Endianness and signedness are not type enforced!
-    The macros are just for clarity purposes.
+    Macros for making signals
 */
-#define MakeSignal(type, startBit, length, factor, offset) \
+#define MakeSignalExp(type, startBit, length, factor, offset) \
     std::make_shared<CAN_Signal<type>>(startBit, length, factor, offset); 
+
+#define MakeSignal(type, cfg) \
+    std::make_shared<CAN_Signal<type>>(cfg.startBit, cfg.length, cfg.factor, cfg.offset);
 
 #define MakeSignalSigned(type, startBit, length, factor, offset, isSigned) \
     std::make_shared<CAN_Signal<type>>(startBit, length, factor, offset, isSigned); 

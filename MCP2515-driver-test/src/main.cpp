@@ -13,24 +13,25 @@ ESPGpio gpio(SS, GpioMode::G_OUTPUT);
 ESPClock clock_esp;
 MCP2515 mcp2515(spi, gpio, clock_esp);
 CAN_Bus drive_bus(mcp2515);
+//data_bus
 VirtualTimerGroup group;
 
-CAN_Signal_FLOAT Gen_Amps = MakeSignal(float, 0, 16, 0.01, 0);
-CAN_Signal_FLOAT Front_Fan_Amps = MakeSignal(float, 16, 8, 0.01, 0);
-CAN_Signal_FLOAT Rear_Fan_Amps = MakeSignal(float, 24, 8, 0.01, 0);
-CAN_Signal_FLOAT Front_Pump_Amps = MakeSignal(float, 32, 8, 0.01, 0);
-CAN_Signal_FLOAT Rear_Pump_Amps = MakeSignal(float, 40, 8, 0.01, 0);
+CAN_Signal_FLOAT Gen_Amps = MakeSignalExp(float, 0, 16, 0.01, 0);
+CAN_Signal_FLOAT Front_Fan_Amps = MakeSignalExp(float, 16, 8, 0.01, 0);
+CAN_Signal_FLOAT Rear_Fan_Amps = MakeSignalExp(float, 24, 8, 0.01, 0);
+CAN_Signal_FLOAT Front_Pump_Amps = MakeSignalExp(float, 32, 8, 0.01, 0);
+CAN_Signal_FLOAT Rear_Pump_Amps = MakeSignalExp(float, 40, 8, 0.01, 0);
 
-CAN_Signal_INT16 Inverter_Temp = MakeSignal(int16_t, 0, 16, 0.1, 0);
-CAN_Signal_INT16 Motor_Temp = MakeSignal(int16_t, 16, 16, 0.1, 0);
+CAN_Signal_INT16 Inverter_Temp = MakeSignalExp(int16_t, 0, 16, 0.1, 0);
+CAN_Signal_INT16 Motor_Temp = MakeSignalExp(int16_t, 16, 16, 0.1, 0);
 
-CAN_Signal_INT16 RPM = MakeSignal(int16_t, 0, 16, 1, 0);
-CAN_Signal_INT16 Motor_Current = MakeSignal(int16_t, 16, 16, 0.1, 0);
-CAN_Signal_INT16 DC_Voltage = MakeSignal(int16_t, 32, 16, 0.1, 0);
-CAN_Signal_INT16 DC_Current = MakeSignal(int16_t, 48, 16, 0.1, 0);
+CAN_Signal_INT16 RPM = MakeSignalExp(int16_t, 0, 16, 1, 0);
+CAN_Signal_INT16 Motor_Current = MakeSignalExp(int16_t, 16, 16, 0.1, 0);
+CAN_Signal_INT16 DC_Voltage = MakeSignalExp(int16_t, 32, 16, 0.1, 0);
+CAN_Signal_INT16 DC_Current = MakeSignalExp(int16_t, 48, 16, 0.1, 0);
 
-CAN_Signal_INT16 APPS1_Throttle = MakeSignal(int16_t, 0, 16, 1, 0);
-CAN_Signal_INT16 APPS2_Throttle = MakeSignal(int16_t, 16, 16, 1, 0);
+CAN_Signal_INT16 APPS1_Throttle = MakeSignalExp(int16_t, 0, 16, 1, 0);
+CAN_Signal_INT16 APPS2_Throttle = MakeSignalExp(int16_t, 16, 16, 1, 0);
 
 void pdm_current_recv() {
   float gav = Gen_Amps->get();
@@ -53,9 +54,17 @@ void motor_status_recv() {
   Serial.printf("Motor Status Values: %d, %d, %d, %d\n", rpm, mc, dcv, dcc);
 }
 
-RX_CAN_Message_Callback(4) motor_status(drive_bus, 0x281, false, 8, motor_status_recv, RPM, Motor_Current, DC_Voltage, DC_Current);
-RX_CAN_Message(2) temp_status(drive_bus, 0x282, false, 4, Inverter_Temp, Motor_Temp);
-RX_CAN_Message_Callback(5) pdm_current(drive_bus, 0x2A1, false, 6, pdm_current_recv, Gen_Amps, Front_Fan_Amps, Rear_Fan_Amps, Front_Pump_Amps, Rear_Pump_Amps);
+// cerate a config struct which populates the object
+RX_can_msg_config temp_status_cfg {
+  .bus = drive_bus,
+  .id = 0x282,
+  .extended = false,
+  .length = 4
+};
+
+RX_CAN_Message(4) motor_status(drive_bus, 0x281, false, 8, motor_status_recv, RPM, Motor_Current, DC_Voltage, DC_Current);
+RX_CAN_Message(2) temp_status{temp_status_cfg, Inverter_Temp, Motor_Temp};
+RX_CAN_Message(5) pdm_current(drive_bus, 0x2A1, false, 6, pdm_current_recv, Gen_Amps, Front_Fan_Amps, Rear_Fan_Amps, Front_Pump_Amps, Rear_Pump_Amps);
 TX_CAN_Message(2) ECU_Throttle(drive_bus, 0x202, false, 4, 1000, group, APPS1_Throttle, APPS2_Throttle);
 
 
