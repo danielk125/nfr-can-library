@@ -86,6 +86,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   group.Tick(millis());
   drive_bus.tick_bus();
+  mcp2515.updateMissCounter();
 }
 
 

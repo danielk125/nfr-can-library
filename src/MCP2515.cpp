@@ -286,6 +286,5 @@ bool MCP2515::updateMissCounter(){
 }
 
 float MCP2515::getMissCounter() {
-    if (missCounter + recvCount == 0) return 0;
-    return missCounter/(float)(missCounter + recvCount);
+    return missCounter;
 }

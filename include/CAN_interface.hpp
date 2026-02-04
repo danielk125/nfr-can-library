@@ -67,7 +67,6 @@ public:
     RawSignalValue getRawValue() { return _sRawValue; }
 
     T get() const { return _sValue; }
-
     
     ICAN_Signal_DataBuf toBuf() const override {
         T data = get();
@@ -360,6 +359,15 @@ public:
 
             frame._data = data;
         }
+    }
+
+    std::array<ICAN_Signal_DataBuf, num_signals> getSignalData() {
+        std::array<ICAN_Signal_DataBuf, num_signals> buf;
+        for (int i = 0; i < num_signals; i++){
+            buf[i] = _signals[i]->toBuf();
+        }
+
+        return buf;
     }
 
     void TX_enable() {
