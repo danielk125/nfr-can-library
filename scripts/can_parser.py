@@ -21,6 +21,8 @@ MANDATORY_COLUMNS = {
 naming_conventions = ["camelCase", "PascalCase", "snake_case"]
 
 def convert_name_convention(name, convention):
+    # Do not worry about casing of the provided naming convention 
+    convention = naming_conventions[naming_conventions.index(convention.lower())]
     name = name.lower()
     name_lst = name.split("_")
     match convention:
