@@ -1,7 +1,7 @@
 #ifndef ICLOCK_HPP
 #define ICLOCK_HPP
 
-#include "../../IClock.hpp"
+#include "../../nfr_can/IClock.hpp"
 #include <Arduino.h>
 
 #endif

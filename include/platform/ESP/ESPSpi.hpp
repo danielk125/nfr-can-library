@@ -1,7 +1,7 @@
 #ifndef ISPI_HPP
 #define ISPI_HPP
 
-#include "../../ISpi.hpp"
+#include "../../nfr_can/ISpi.hpp"
 #endif
 
 #include <SPI.h>
