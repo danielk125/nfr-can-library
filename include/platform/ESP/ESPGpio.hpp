@@ -1,7 +1,7 @@
 #ifndef IGPIO_HPP
 #define IGPIO_HPP
 
-#include "../../IGpio.hpp"
+#include "../../nfr_can/IGpio.hpp"
 #include <Arduino.h>
 
 #endif

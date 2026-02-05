@@ -48,6 +48,8 @@ struct CAN_Signal_config {
     uint8_t length;
     double factor;
     double offset;
+    bool isSigned = false;
+    Endianness endian = Endianness::littleEndian;
 };
 
 template <typename T>
@@ -225,7 +227,7 @@ struct RX_can_msg_config {
     uint32_t id;
     bool extended;
     uint8_t length;
-    std::function<void()> callback_func{};
+    std::function<void()> callback_func {};
 };
 
 struct TX_can_msg_config {
@@ -414,11 +416,11 @@ private:
 /*
     Macros for making signals
 */
+#define MakeSignal(type, cfg) \
+    std::make_shared<CAN_Signal<type>>(cfg.startBit, cfg.length, cfg.factor, cfg.offset, cfg.isSigned, cfg.endian);
+
 #define MakeSignalExp(type, startBit, length, factor, offset) \
     std::make_shared<CAN_Signal<type>>(startBit, length, factor, offset); 
-
-#define MakeSignal(type, cfg) \
-    std::make_shared<CAN_Signal<type>>(cfg.startBit, cfg.length, cfg.factor, cfg.offset);
 
 #define MakeSignalSigned(type, startBit, length, factor, offset, isSigned) \
     std::make_shared<CAN_Signal<type>>(startBit, length, factor, offset, isSigned); 
