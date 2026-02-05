@@ -1,7 +1,5 @@
 #include "../include/nfr_can/MCP2515.hpp"
 #include <cstring>
-#include <Arduino.h>
-
 
 void MCP2515::select(bool set){
     _cs.gpio_write(set ? GpioLevel::G_LOW : GpioLevel::G_HIGH);

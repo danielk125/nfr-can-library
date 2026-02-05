@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include <type_traits>
+#include <cstring>
 
 #include "virtual_timer.hpp"
 
