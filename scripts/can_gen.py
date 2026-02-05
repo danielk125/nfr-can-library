@@ -1,6 +1,6 @@
 import pandas as pd
+import argparse
 from can_parser import CANDatabase
-
 
 def generate_can_code(db_file, naming_convention, output_file):
     df = pd.read_csv(db_file)
@@ -12,9 +12,6 @@ def generate_can_code(db_file, naming_convention, output_file):
     messages = db.get_messages().values()
 
     with open(output_file, "w") as f:
-
-        # add interface
-        # add includes
         f.write("#include \"CAN_interface.cpp\"\n")
         f.write("namespace CANDBC {\n")
 
@@ -28,8 +25,13 @@ def generate_can_code(db_file, naming_convention, output_file):
             f.write(can_msg_str + "\n\n")
         f.write("}")
         
-# arg parser, naming conventions
-# namespace, includes
 
-
-generate_can_code("can_dbc.csv", "PascalCase", "can_dbc.hpp")
+parser = argparse.ArgumentParser()
+parser.add_argument("dbc_file", type=str, help="DBC file that is read and utilized to generate the cpp code.")
+parser.add_argument("-o", "--output_file", help = "Output file for generated code.", default="can_dbc.hpp")
+parser.add_argument("-c", "--convention", help="Naming convention", default="PascalCase")
+args = parser.parse_args()
+dbc_file = args.dbc_file
+output_file = args.output_file
+naming_convention = args.convention
+generate_can_code(dbc_file, naming_convention, output_file)

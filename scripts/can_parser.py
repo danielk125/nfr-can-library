@@ -109,10 +109,11 @@ class CANSignal:
         """
         # is the data_type unsigned?
         data_type = "unknown" if self.data_type == "" else self.data_type
-        
+        if data_type == "unsigned_float":
+            data_type = "float"
         is_unsigned = data_type.startswith("u")
 
-        macro = "MakeSignalSigned" if not is_unsigned else "MakeSignal"
+        macro = "MakeSignalSigned" if not is_unsigned else "MakeSignalExp"
         signal_name = self.get_cpp_signal_name(naming_convention)
         if is_unsigned:
             return f"CAN_Signal_{data_type.upper().removesuffix("_T")} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset});"
