@@ -109,15 +109,15 @@ class CANSignal:
         """
         # is the data_type unsigned?
         data_type = "unknown" if self.data_type == "" else self.data_type
-
+        
         is_unsigned = data_type.startswith("u")
 
         macro = "MakeSignalSigned" if not is_unsigned else "MakeSignal"
         signal_name = self.get_cpp_signal_name(naming_convention)
         if is_unsigned:
-            return f"{macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset}) {signal_name};"
+            return f"CAN_Signal_{data_type.upper().removesuffix("_T")} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset});"
         else:
-            return f"{macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset}, {not is_unsigned}) {signal_name};"
+            return f"CAN_Signal_{data_type.upper().removesuffix("_T")} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset}, {not is_unsigned});"
 
     def as_cantools_representation(self):
         """
@@ -267,7 +267,7 @@ class CANMessage:
         # print(cpp_code)
 
         message_name = self.get_cpp_message_name(cpp_bus_name, naming_convention)
-        message_code = f"CANTXMessage<{num_signals}> {message_name}{{{cpp_bus_name}, {self.message_id}, {message_size_bytes}, {self.cycle_time}, {signal_list}}};"
+        message_code = f"TX_CAN_Message({num_signals}) {message_name}{{{cpp_bus_name}, {self.message_id}, {message_size_bytes}, {self.cycle_time}, {signal_list}}};"
         # print(message_code)
         return cpp_code + "\n\n" + message_code
 
@@ -304,7 +304,7 @@ class CANMessage:
 
         # print(cpp_code)
         message_name = self.get_cpp_message_name(cpp_bus_name, naming_convention)
-        message_code = f"CANRXMessage<{num_signals}> {message_name}{{{cpp_bus_name}, {self.message_id}, {signal_list}}};"
+        message_code = f"RX_CAN_Message({num_signals}) {message_name}{{{cpp_bus_name}, {self.message_id}, {signal_list}}};"
         # print(message_code)
 
         return cpp_code + "\n\n" + message_code

@@ -15,7 +15,8 @@ def generate_can_code(db_file, naming_convention, output_file):
 
         # add interface
         # add includes
-
+        f.write("#include \"CAN_interface.cpp\"\n")
+        f.write("namespace CANDBC {\n")
 
         for message in messages:
             signals = message.get_signals()
@@ -25,9 +26,10 @@ def generate_can_code(db_file, naming_convention, output_file):
 
             can_msg_str = message.as_cpp_receive_code(buses[0].get_cpp_bus_name(naming_convention), naming_convention)
             f.write(can_msg_str + "\n\n")
+        f.write("}")
         
 # arg parser, naming conventions
 # namespace, includes
 
 
-generate_can_code("can_dbc.csv", "PascalCase", "can_signals.hpp")
+generate_can_code("can_dbc.csv", "PascalCase", "can_dbc.hpp")
