@@ -18,6 +18,27 @@ MANDATORY_COLUMNS = {
     "Data Type": "str",
 }
 
+naming_conventions = ["camelCase", "PascalCase", "snake_case"]
+
+def convert_name_convention(name, convention):
+    name = name.lower()
+    name_lst = name.split("_")
+    match convention:
+        case "camelCase":
+            name_lst = [word.capitalize() for word in name_lst]
+            name_lst[0] = name_lst[0].lower()
+            converted_name = "".join(name_lst)
+            return converted_name
+        case "PascalCase":
+            name_lst = [word.capitalize() for word in name_lst]
+            converted_name = "".join(name_lst)
+            return converted_name
+        case "snake_case":
+            return name
+        case _:
+            raise NameError("Need to provide a valid convention type.")
+    
+
 
 # this was a remnant from the original code that uses pandas
 def get_column_name_from_index(index):
@@ -67,8 +88,8 @@ class CANSignal:
         self.data_type = data_type
         self.message = None
 
-    def get_cpp_signal_name(self, cpp_bus_name, cpp_message_name):
-        cpp_name = f"{cpp_bus_name}_{cpp_message_name}_{self.signal_name}"
+    def get_cpp_signal_name(self, naming_convention):
+        """ cpp_name = f"{cpp_bus_name}_{cpp_message_name}_{self.signal_name}"
         # cleanup the signal name
         cpp_name = cpp_name.strip()
         # replace all non-alphanumeric characters with underscores
@@ -76,11 +97,11 @@ class CANSignal:
         # remove any leading underscores
         cpp_name = cpp_name.lstrip("_")
         # set the signal name to lowercase
-        cpp_name = cpp_name.lower()
+        cpp_name = cpp_name.lower() """
+        
+        return convert_name_convention(self.signal_name, naming_convention)
 
-        return cpp_name
-
-    def as_cpp_code(self):
+    def as_cpp_code(self, naming_convention):
         """
         Return the C++ code that represents this signal. The code should be in the following format:
         CANSignal using the MakeSignedCANSignal(SignalType, position, length, factor, offset) or
@@ -92,7 +113,7 @@ class CANSignal:
         is_unsigned = data_type.startswith("u")
 
         macro = "MakeSignalSigned" if not is_unsigned else "MakeSignal"
-        signal_name = self.signal_name.lower()
+        signal_name = self.get_cpp_signal_name(naming_convention)
         if is_unsigned:
             return f"{macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset}) {signal_name};"
         else:
@@ -200,8 +221,8 @@ class CANMessage:
         message_size_bytes = max(1, message_size_bytes)
         return message_size_bytes
 
-    def get_cpp_message_name(self, cpp_bus_name):
-        cpp_name = f"{cpp_bus_name}_{self.message_name}"
+    def get_cpp_message_name(self, cpp_bus_name, naming_convention):
+        """ cpp_name = f"{cpp_bus_name}_{self.message_name}"
         # cleanup the message name
         cpp_name = cpp_name.strip()
         # replace all non-alphanumeric characters with underscores
@@ -209,10 +230,11 @@ class CANMessage:
         # remove any leading underscores
         cpp_name = cpp_name.lstrip("_")
         # set the message name to lowercase
-        cpp_name = cpp_name.lower()
-        return cpp_name
+        cpp_name = cpp_name.lower() """
 
-    def as_cpp_transmit_code(self, cpp_bus_name):
+        return convert_name_convention(self.message_name, naming_convention)
+
+    def as_cpp_transmit_code(self, cpp_bus_name, naming_convention):
         """
         Return the C++ code that represents this message. The code should be in the following format:
         CANTXMessage takes the CAN bus to transmit on, the message ID, the message size in bytes (based on the end position
@@ -225,7 +247,7 @@ class CANMessage:
 
         cpp_code = "\n".join(
             [
-                f"{signal.as_cpp_code(cpp_bus_name, self.message_name)}"
+                f"{signal.as_cpp_code(naming_convention)}"
                 for signal in self.signals
             ]
         )
@@ -244,12 +266,12 @@ class CANMessage:
 
         # print(cpp_code)
 
-        message_name = self.get_cpp_message_name(cpp_bus_name)
+        message_name = self.get_cpp_message_name(cpp_bus_name, naming_convention)
         message_code = f"CANTXMessage<{num_signals}> {message_name}{{{cpp_bus_name}, {self.message_id}, {message_size_bytes}, {self.cycle_time}, {signal_list}}};"
         # print(message_code)
         return cpp_code + "\n\n" + message_code
 
-    def as_cpp_receive_code(self, cpp_bus_name):
+    def as_cpp_receive_code(self, cpp_bus_name, naming_convention):
         """
         Return the C++ code that represents this message. The code should be in the following format:
         CANRXMessage takes the CAN bus to receive on, the message ID, and the signals to be received as constructor arguments.
@@ -265,7 +287,7 @@ class CANMessage:
         """    
         cpp_code = "\n".join(
             [
-                f"{signal.as_cpp_code(cpp_bus_name, self.message_name)}"
+                f"{signal.as_cpp_code(naming_convention)}"
                 for signal in self.signals
             ]
         )
@@ -274,14 +296,14 @@ class CANMessage:
         signal_list = ", ".join(
             [
                 signal.get_cpp_signal_name(
-                    cpp_bus_name, self.message_name
+                    naming_convention
                 )
                 for signal in self.signals
             ]
         )
 
         # print(cpp_code)
-        message_name = self.get_cpp_message_name(cpp_bus_name)
+        message_name = self.get_cpp_message_name(cpp_bus_name, naming_convention)
         message_code = f"CANRXMessage<{num_signals}> {message_name}{{{cpp_bus_name}, {self.message_id}, {signal_list}}};"
         # print(message_code)
 
@@ -331,7 +353,7 @@ class CANBus:
         message.buses.add(self)
         self.messages.add(message)
 
-    def get_cpp_bus_name(self):
+    def get_cpp_bus_name(self, naming_convention):
         # cleanup the bus name
         cpp_bus_name = self.name.strip()
         # replace all non-alphanumeric characters with underscores
@@ -340,8 +362,10 @@ class CANBus:
         cpp_bus_name = cpp_bus_name.lstrip("_")
         # set the bus name to lowercase
         cpp_bus_name = cpp_bus_name.lower()
+        
+        
 
-        return cpp_bus_name
+        return convert_name_convention(cpp_bus_name, naming_convention)
     
     def as_cantools_representation(self) -> cantools.database.Database:
         """
