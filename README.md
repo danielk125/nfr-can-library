@@ -50,7 +50,21 @@ The main function of interest is `tick_bus()`, which empties any RX buffer held 
 ---
 
 ## Auto Generating Code
-Signals and messages from a provided DBC file can be auto-generated into a C++ file utilizing a python script. The necessary includes are provided and these signals and messages are encapsulated in a namespace.
+
+Signals and messages from a provided DBC file can be auto-generated into a C++ file utilizing a python script. The necessary includes are provided and these signals and messages are encapsulated into a namespace.
+
+
+```
+generate_can dbc_file [OPTIONS]
+```
+
+# Options
+```
+-h --help                 Print the help text 
+-o --output_file          Provide a designated output file. Default is "can_dbc.hpp"
+-c --convention           Provide a naming convention. Default is PascalCase.
+```
+
 ---
 
 ## Requirements
@@ -72,4 +86,5 @@ Signals and messages from a provided DBC file can be auto-generated into a C++ f
 ## Credits
 - **Daniel Kramer** -- `danielk125`
 - **Jalil Hemphill** -- `jalilhemphill1`
+
 
