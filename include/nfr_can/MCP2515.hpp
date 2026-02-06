@@ -76,6 +76,11 @@ private:
     static constexpr uint8_t REG_RXB0DLC   = 0x65;
     static constexpr uint8_t REG_RXB0D0    = 0x66;
     static constexpr uint8_t REG_EFLG      = 0x2D;
+    static constexpr uint8_t REG_TXRTSCTRL = 0x0D;
+
+    static constexpr uint8_t REG_TEC    = 0x1C;
+    static constexpr uint8_t REG_REC    = 0x1D;
+
     // Bits/masks
     static constexpr uint8_t RXB0SIDL_IDE   = 0x08; // SIDL bit3
     static constexpr uint8_t RXB0DLC_RTR    = 0x40; // DLC bit6
@@ -86,11 +91,27 @@ private:
 
     static constexpr uint8_t CANINTF_RX0IF = 0x01;
 
-    static constexpr uint8_t TXBCTRL_TXREQ = 0x08; // bit3
+    static constexpr uint8_t EFLG_TXBO  = 0x20;
+    static constexpr uint8_t EFLG_TXEP  = 0x10;
+    static constexpr uint8_t EFLG_RXEP  = 0x08;
+    static constexpr uint8_t EFLG_TXWAR = 0x04;
+    static constexpr uint8_t EFLG_RXWAR = 0x02;
+    static constexpr uint8_t EFLG_EWARN = 0x01;
+
+    static constexpr uint8_t CANCTRL_ABAT = 0x10;
+
+    // TXB0CTRL bits (per MCP2515 datasheet)
+    static constexpr uint8_t TXBCTRL_ABTF  = 0x40;
+    static constexpr uint8_t TXBCTRL_MLOA  = 0x20;
+    static constexpr uint8_t TXBCTRL_TXERR = 0x10;
+    static constexpr uint8_t TXBCTRL_TXREQ = 0x08;
+
 
     void select(bool en);
     bool reset();
     bool baudRateToCNF(BaudRate baud, bitRateConfig& out);
+    bool abortAllTx();
+    void dumpStatus(const char *tag);
 
     bool writeRegister(uint8_t addr, uint8_t val);
     bool readRegister(uint8_t addr, uint8_t& out);
