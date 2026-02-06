@@ -53,15 +53,16 @@ bool MCP2515::bitModify(uint8_t addr, uint8_t mask, uint8_t data) {
 }
 
 bool MCP2515::writeRegisters(uint8_t startAddr, const uint8_t* data, uint8_t len) {
-    if (!data || len == 0)
-        return false;
+    if (!data || len == 0) return false;
 
-    uint8_t buf[2]{CMD_WRITE, startAddr};
+    uint8_t buf[2 + 32]{};
+    buf[0] = CMD_WRITE;
+    buf[1] = startAddr;
+    std::memcpy(&buf[2], data, len);
 
     select(true);
-    bool ok = _spi.ISpi_write(buf, 2) && _spi.ISpi_write(data, len);
+    bool ok = _spi.ISpi_write(buf, static_cast<size_t>(2 + len));
     select(false);
-
     return ok;
 }
 
