@@ -32,8 +32,6 @@ def generate_can_code(db_file, naming_convention, output_file):
             bus = buses[0].get_cpp_bus_name(naming_convention)
             can_msg_str = message.as_cpp_receive_code(bus, naming_convention)
             file_w_str += f"{can_msg_str}\n\n"
-            # f.write(can_msg_str + "\n\n")
-        # f.write("}")
         file_w_str += "}"
         f.write(file_w_str)
         

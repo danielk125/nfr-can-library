@@ -20,8 +20,12 @@ MANDATORY_COLUMNS = {
 naming_conventions = ["camelCase", "PascalCase", "snake_case", "snakecase"]
 
 def convert_name_convention(name, convention):
-    # Do not worry about casing of the provided naming convention 
+    # Clean user's typed convention
+    # Remove any specific casing or whitespace
+    convention = convention.strip()
+    convention = "".join(convention.split(" "))
     convention = naming_conventions[list(map(str.lower, naming_conventions)).index(convention.lower())]
+    
     name = name.lower()
     name_lst = name.split("_")
     match convention:
@@ -232,7 +236,7 @@ class CANMessage:
         """
         Return the C++ code that represents this message.
         It is returned in the format of:
-        TX_CAN_Message
+        TX_CAN_Message(Number of Signals) Message_Name{Bus name, Message ID, Size (Bytes), Cycle Time, Signals}
         """
 
 
@@ -254,17 +258,9 @@ class CANMessage:
 
     def as_cpp_receive_code(self, cpp_bus_name, naming_convention):
         """
-        Return the C++ code that represents this message. The code should be in the following format:
-        CANRXMessage takes the CAN bus to receive on, the message ID, and the signals to be received as constructor arguments.
-        CANRXMessages automatically register themselves with the can_bus on construction.
-        For example:
-        CANRXMessage<4> rx_message{can_bus,
-                                   0x200,
-                                   []() { Serial.println(rx_message.GetLastReceiveTime()); },
-                                   float_rx_signal,
-                                   uint8_t_rx_signal,
-                                   bool_rx_signal,
-                                   millis_rx_signal};
+        Return the C++ code that represents this message.
+        It is returned in the format of:
+        RX_CAN_Message(Number of Signals) Message_Name{Bus name, Message ID, Size (Bytes), Cycle Time, Signals}
         """    
         
 
@@ -278,11 +274,9 @@ class CANMessage:
             ]
         )
 
-        
         message_name = self.get_cpp_message_name(cpp_bus_name, naming_convention)
         message_code = f"RX_CAN_Message({num_signals}) {message_name}{{{cpp_bus_name}, {self.message_id}, {signal_list}}};"
        
-
         return message_code
 
     def as_cantools_representation(self):
@@ -339,8 +333,6 @@ class CANBus:
         # set the bus name to lowercase
         cpp_bus_name = cpp_bus_name.lower()
         
-        
-
         return convert_name_convention(cpp_bus_name, naming_convention)
     
     def as_cantools_representation(self) -> cantools.database.Database:

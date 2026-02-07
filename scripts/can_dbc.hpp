@@ -1,501 +1,501 @@
 #include "CAN_interface.cpp"
 namespace CANDBC {
-CAN_Signal_FLOAT GenAmps = MakeSignalSigned(float, 0, 16, 0.01, 0.0, True);
-CAN_Signal_FLOAT FrontFanAmps = MakeSignalSigned(float, 16, 8, 0.01, 0.0, True);
-CAN_Signal_FLOAT RearFanAmps = MakeSignalSigned(float, 24, 8, 0.01, 0.0, True);
-CAN_Signal_FLOAT FrontPumpAmps = MakeSignalSigned(float, 32, 8, 0.01, 0.0, True);
-CAN_Signal_FLOAT RearPumpAmps = MakeSignalSigned(float, 40, 8, 0.01, 0.0, True);
-RX_CAN_Message(5) PdmCurrent{DriveBus, 0x2A1, GenAmps, FrontFanAmps, RearFanAmps, FrontPumpAmps, RearPumpAmps};
+CAN_Signal_FLOAT genAmps = MakeSignalSigned(float, 0, 16, 0.01, 0.0, True);
+CAN_Signal_FLOAT frontFanAmps = MakeSignalSigned(float, 16, 8, 0.01, 0.0, True);
+CAN_Signal_FLOAT rearFanAmps = MakeSignalSigned(float, 24, 8, 0.01, 0.0, True);
+CAN_Signal_FLOAT frontPumpAmps = MakeSignalSigned(float, 32, 8, 0.01, 0.0, True);
+CAN_Signal_FLOAT rearPumpAmps = MakeSignalSigned(float, 40, 8, 0.01, 0.0, True);
+RX_CAN_Message(5) pdmCurrent{driveBus, 0x2A1, genAmps, frontFanAmps, rearFanAmps, frontPumpAmps, rearPumpAmps};
 
-CAN_Signal_FLOAT BatVolt = MakeSignalSigned(float, 0, 16, 0.01, 0.0, True);
-CAN_Signal_BOOL LowBatVoltWarning = MakeSignalSigned(bool, 16, 8, 1.0, 0.0, True);
-CAN_Signal_BOOL DangerBatVoltWarning = MakeSignalSigned(bool, 24, 8, 1.0, 0.0, True);
-RX_CAN_Message(3) PdmBatVolt{DriveBus, 0x2A2, BatVolt, LowBatVoltWarning, DangerBatVoltWarning};
+CAN_Signal_FLOAT batVolt = MakeSignalSigned(float, 0, 16, 0.01, 0.0, True);
+CAN_Signal_BOOL lowBatVoltWarning = MakeSignalSigned(bool, 16, 8, 1.0, 0.0, True);
+CAN_Signal_BOOL dangerBatVoltWarning = MakeSignalSigned(bool, 24, 8, 1.0, 0.0, True);
+RX_CAN_Message(3) pdmBatVolt{driveBus, 0x2A2, batVolt, lowBatVoltWarning, dangerBatVoltWarning};
 
-CAN_Signal_INT16 Rpm = MakeSignalSigned(int16_t, 0, 16, 1.0, 0.0, True);
-CAN_Signal_INT16 MotorCurrent = MakeSignalSigned(int16_t, 16, 16, 0.1, 0.0, True);
-CAN_Signal_INT16 DcVoltage = MakeSignalSigned(int16_t, 32, 16, 0.1, 0.0, True);
-CAN_Signal_INT16 DcCurrent = MakeSignalSigned(int16_t, 48, 16, 0.1, 0.0, True);
-RX_CAN_Message(4) FrontRightInverterMotorStatus{DriveBus, 0x28B, Rpm, MotorCurrent, DcVoltage, DcCurrent};
+CAN_Signal_INT16 rpm = MakeSignalSigned(int16_t, 0, 16, 1.0, 0.0, True);
+CAN_Signal_INT16 motorCurrent = MakeSignalSigned(int16_t, 16, 16, 0.1, 0.0, True);
+CAN_Signal_INT16 dcVoltage = MakeSignalSigned(int16_t, 32, 16, 0.1, 0.0, True);
+CAN_Signal_INT16 dcCurrent = MakeSignalSigned(int16_t, 48, 16, 0.1, 0.0, True);
+RX_CAN_Message(4) frontRightInverterMotorStatus{driveBus, 0x28B, rpm, motorCurrent, dcVoltage, dcCurrent};
 
-CAN_Signal_INT16 IgbtTemp = MakeSignalSigned(int16_t, 0, 16, 0.1, 0.0, True);
-CAN_Signal_INT16 MotorTemp = MakeSignalSigned(int16_t, 16, 16, 0.1, 0.0, True);
-RX_CAN_Message(2) FrontRightInverterTempStatus{DriveBus, 0x28C, IgbtTemp, MotorTemp};
+CAN_Signal_INT16 igbtTemp = MakeSignalSigned(int16_t, 0, 16, 0.1, 0.0, True);
+CAN_Signal_INT16 motorTemp = MakeSignalSigned(int16_t, 16, 16, 0.1, 0.0, True);
+RX_CAN_Message(2) frontRightInverterTempStatus{driveBus, 0x28C, igbtTemp, motorTemp};
 
-CAN_Signal_UINT32 AhCharged = MakeSignalExp(uint32_t, 32, 32, 0.0001, 0.0);
-RX_CAN_Message(1) FrontRightInverterCurrentDraw{DriveBus, nan, AhCharged};
+CAN_Signal_UINT32 ahCharged = MakeSignalExp(uint32_t, 32, 32, 0.0001, 0.0);
+RX_CAN_Message(1) frontRightInverterCurrentDraw{driveBus, nan, ahCharged};
 
-CAN_Signal_UINT32 WhDrawn = MakeSignalExp(uint32_t, 0, 32, 0.001, 0.0);
-CAN_Signal_UINT32 WhCharged = MakeSignalExp(uint32_t, 32, 32, 0.001, 0.0);
-RX_CAN_Message(2) FrontRightInverterPowerDraw{DriveBus, 0x28E, WhDrawn, WhCharged};
+CAN_Signal_UINT32 whDrawn = MakeSignalExp(uint32_t, 0, 32, 0.001, 0.0);
+CAN_Signal_UINT32 whCharged = MakeSignalExp(uint32_t, 32, 32, 0.001, 0.0);
+RX_CAN_Message(2) frontRightInverterPowerDraw{driveBus, 0x28E, whDrawn, whCharged};
 
-CAN_Signal_UINT8 FaultCode = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-RX_CAN_Message(1) FrontRightInverterFaultStatus{DriveBus, 0x28A, FaultCode};
+CAN_Signal_UINT8 faultCode = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+RX_CAN_Message(1) frontRightInverterFaultStatus{driveBus, 0x28A, faultCode};
 
-RX_CAN_Message(4) FrontLeftInverterMotorStatus{DriveBus, 0x286, Rpm, MotorCurrent, DcVoltage, DcCurrent};
+RX_CAN_Message(4) frontLeftInverterMotorStatus{driveBus, 0x286, rpm, motorCurrent, dcVoltage, dcCurrent};
 
-RX_CAN_Message(2) FrontLeftInverterTempStatus{DriveBus, 0x287, IgbtTemp, MotorTemp};
+RX_CAN_Message(2) frontLeftInverterTempStatus{driveBus, 0x287, igbtTemp, motorTemp};
 
-RX_CAN_Message(1) FrontLeftInverterCurrentDraw{DriveBus, nan, AhCharged};
+RX_CAN_Message(1) frontLeftInverterCurrentDraw{driveBus, nan, ahCharged};
 
-RX_CAN_Message(2) FrontLeftInverterPowerDraw{DriveBus, 0x289, WhDrawn, WhCharged};
+RX_CAN_Message(2) frontLeftInverterPowerDraw{driveBus, 0x289, whDrawn, whCharged};
 
-RX_CAN_Message(1) FrontLeftInverterFaultStatus{DriveBus, 0x285, FaultCode};
+RX_CAN_Message(1) frontLeftInverterFaultStatus{driveBus, 0x285, faultCode};
 
-RX_CAN_Message(6) RearInverterMotorStatus{DriveBus, 0x281, Rpm, MotorCurrent, DcVoltage, DcCurrent, IgbtTemp, MotorTemp};
+RX_CAN_Message(6) rearInverterMotorStatus{driveBus, 0x281, rpm, motorCurrent, dcVoltage, dcCurrent, igbtTemp, motorTemp};
 
-RX_CAN_Message(1) RearInverterCurrentDraw{DriveBus, nan, AhCharged};
+RX_CAN_Message(1) rearInverterCurrentDraw{driveBus, nan, ahCharged};
 
-RX_CAN_Message(2) RearInverterPowerDraw{DriveBus, 0x284, WhDrawn, WhCharged};
+RX_CAN_Message(2) rearInverterPowerDraw{driveBus, 0x284, whDrawn, whCharged};
 
-RX_CAN_Message(1) RearInverterFaultStatus{DriveBus, 0x280, FaultCode};
+RX_CAN_Message(1) rearInverterFaultStatus{driveBus, 0x280, faultCode};
 
-CAN_Signal_INT32 SetCurrent = MakeSignalSigned(int32_t, 0, 32, 0.001, 0.0, True);
-RX_CAN_Message(1) EcuSetCurrentFrontLeftInverter{DriveBus, 0x20D, SetCurrent};
+CAN_Signal_INT32 setCurrent = MakeSignalSigned(int32_t, 0, 32, 0.001, 0.0, True);
+RX_CAN_Message(1) ecuSetCurrentFrontLeftInverter{driveBus, 0x20D, setCurrent};
 
-CAN_Signal_INT32 SetCurrentBrake = MakeSignalSigned(int32_t, 0, 32, 0.001, 0.0, True);
-RX_CAN_Message(1) EcuSetCurrentBrakeFrontLeftInverter{DriveBus, 0x20E, SetCurrentBrake};
+CAN_Signal_INT32 setCurrentBrake = MakeSignalSigned(int32_t, 0, 32, 0.001, 0.0, True);
+RX_CAN_Message(1) ecuSetCurrentBrakeFrontLeftInverter{driveBus, 0x20E, setCurrentBrake};
 
-RX_CAN_Message(1) EcuSetCurrentFrontRightInverter{DriveBus, 0x20F, SetCurrent};
+RX_CAN_Message(1) ecuSetCurrentFrontRightInverter{driveBus, 0x20F, setCurrent};
 
-RX_CAN_Message(1) EcuSetCurrentBrakeFrontRightInverter{DriveBus, 0x210, SetCurrentBrake};
+RX_CAN_Message(1) ecuSetCurrentBrakeFrontRightInverter{driveBus, 0x210, setCurrentBrake};
 
-RX_CAN_Message(1) EcuSetCurrentRearInverter{DriveBus, 0x200, SetCurrent};
+RX_CAN_Message(1) ecuSetCurrentRearInverter{driveBus, 0x200, setCurrent};
 
-RX_CAN_Message(1) EcuSetCurrentBrakeRearInverter{DriveBus, 0x201, SetCurrentBrake};
+RX_CAN_Message(1) ecuSetCurrentBrakeRearInverter{driveBus, 0x201, setCurrentBrake};
 
-CAN_Signal_INT16 Apps1Throttle = MakeSignalSigned(int16_t, 0, 16, 1.0, 0.0, True);
-CAN_Signal_INT16 Apps2Throttle = MakeSignalSigned(int16_t, 16, 16, 1.0, 0.0, True);
-RX_CAN_Message(2) EcuThrottle{DriveBus, 0x202, Apps1Throttle, Apps2Throttle};
+CAN_Signal_INT16 apps1Throttle = MakeSignalSigned(int16_t, 0, 16, 1.0, 0.0, True);
+CAN_Signal_INT16 apps2Throttle = MakeSignalSigned(int16_t, 16, 16, 1.0, 0.0, True);
+RX_CAN_Message(2) ecuThrottle{driveBus, 0x202, apps1Throttle, apps2Throttle};
 
-CAN_Signal_INT16 FrontBrakePressure = MakeSignalSigned(int16_t, 0, 16, 1.0, 0.0, True);
-CAN_Signal_INT16 RearBrakePressure = MakeSignalSigned(int16_t, 16, 16, 1.0, 0.0, True);
-CAN_Signal_BOOL BrakePressed = MakeSignalSigned(bool, 32, 8, 1.0, 0.0, True);
-RX_CAN_Message(3) EcuBrake{DriveBus, 0x203, FrontBrakePressure, RearBrakePressure, BrakePressed};
+CAN_Signal_INT16 frontBrakePressure = MakeSignalSigned(int16_t, 0, 16, 1.0, 0.0, True);
+CAN_Signal_INT16 rearBrakePressure = MakeSignalSigned(int16_t, 16, 16, 1.0, 0.0, True);
+CAN_Signal_BOOL brakePressed = MakeSignalSigned(bool, 32, 8, 1.0, 0.0, True);
+RX_CAN_Message(3) ecuBrake{driveBus, 0x203, frontBrakePressure, rearBrakePressure, brakePressed};
 
-CAN_Signal_BOOL ImplausibilityPresent = MakeSignalSigned(bool, 0, 8, 1.0, 0.0, True);
-CAN_Signal_BOOL AppssDisagreementImp = MakeSignalSigned(bool, 8, 8, 1.0, 0.0, True);
-CAN_Signal_BOOL BppcImp = MakeSignalSigned(bool, 16, 8, 1.0, 0.0, True);
-CAN_Signal_BOOL BrakeInvalidImp = MakeSignalSigned(bool, 24, 8, 1.0, 0.0, True);
-CAN_Signal_BOOL AppssInvalidImp = MakeSignalSigned(bool, 32, 8, 1.0, 0.0, True);
-RX_CAN_Message(5) EcuImplausibility{DriveBus, 0x204, ImplausibilityPresent, AppssDisagreementImp, BppcImp, BrakeInvalidImp, AppssInvalidImp};
+CAN_Signal_BOOL implausibilityPresent = MakeSignalSigned(bool, 0, 8, 1.0, 0.0, True);
+CAN_Signal_BOOL appssDisagreementImp = MakeSignalSigned(bool, 8, 8, 1.0, 0.0, True);
+CAN_Signal_BOOL bppcImp = MakeSignalSigned(bool, 16, 8, 1.0, 0.0, True);
+CAN_Signal_BOOL brakeInvalidImp = MakeSignalSigned(bool, 24, 8, 1.0, 0.0, True);
+CAN_Signal_BOOL appssInvalidImp = MakeSignalSigned(bool, 32, 8, 1.0, 0.0, True);
+RX_CAN_Message(5) ecuImplausibility{driveBus, 0x204, implausibilityPresent, appssDisagreementImp, bppcImp, brakeInvalidImp, appssInvalidImp};
 
-CAN_Signal_UINT8 BmsCommand = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-RX_CAN_Message(1) EcuBmsCommandMessage{DriveBus, 0x205, BmsCommand};
+CAN_Signal_UINT8 bmsCommand = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+RX_CAN_Message(1) ecuBmsCommandMessage{driveBus, 0x205, bmsCommand};
 
-CAN_Signal_UINT8 DriveState = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-RX_CAN_Message(1) EcuDriveStatus{DriveBus, 0x206, DriveState};
+CAN_Signal_UINT8 driveState = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+RX_CAN_Message(1) ecuDriveStatus{driveBus, 0x206, driveState};
 
-CAN_Signal_BOOL ActiveAeroState = MakeSignalSigned(bool, 0, 1, 1.0, 0.0, True);
-CAN_Signal_INT16 ActiveAeroPosition = MakeSignalSigned(int16_t, 1, 16, 1.0, 0.0, True);
-RX_CAN_Message(2) EcuActiveAeroCommand{DriveBus, 0x208, ActiveAeroState, ActiveAeroPosition};
+CAN_Signal_BOOL activeAeroState = MakeSignalSigned(bool, 0, 1, 1.0, 0.0, True);
+CAN_Signal_INT16 activeAeroPosition = MakeSignalSigned(int16_t, 1, 16, 1.0, 0.0, True);
+RX_CAN_Message(2) ecuActiveAeroCommand{driveBus, 0x208, activeAeroState, activeAeroPosition};
 
-CAN_Signal_UINT8 FrontPumpDutyCycle = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-CAN_Signal_UINT8 RearPumpDutyCycle = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
-CAN_Signal_UINT8 FrontFanDutyCycle = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
-CAN_Signal_UINT8 RearPumpDutyCycle = MakeSignalExp(uint8_t, 24, 8, 1.0, 0.0);
-RX_CAN_Message(4) EcuPumpFanCommand{DriveBus, 0x209, FrontPumpDutyCycle, RearPumpDutyCycle, FrontFanDutyCycle, RearPumpDutyCycle};
+CAN_Signal_UINT8 frontPumpDutyCycle = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+CAN_Signal_UINT8 rearPumpDutyCycle = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
+CAN_Signal_UINT8 frontFanDutyCycle = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
+CAN_Signal_UINT8 rearPumpDutyCycle = MakeSignalExp(uint8_t, 24, 8, 1.0, 0.0);
+RX_CAN_Message(4) ecuPumpFanCommand{driveBus, 0x209, frontPumpDutyCycle, rearPumpDutyCycle, frontFanDutyCycle, rearPumpDutyCycle};
 
-CAN_Signal_UINT8 AccelLutIdResponse = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-RX_CAN_Message(1) EcuLutResponse{DriveBus, 0x20A, AccelLutIdResponse};
+CAN_Signal_UINT8 accelLutIdResponse = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+RX_CAN_Message(1) ecuLutResponse{driveBus, 0x20A, accelLutIdResponse};
 
-CAN_Signal_BOOL IgbtTempLimiting = MakeSignalSigned(bool, 0, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL BatteryTempLimiting = MakeSignalSigned(bool, 1, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL MotorTempLimiting = MakeSignalSigned(bool, 2, 1, 1.0, 0.0, True);
-RX_CAN_Message(3) EcuTempLimitingStatus{DriveBus, 0x20B, IgbtTempLimiting, BatteryTempLimiting, MotorTempLimiting};
-
-CAN_Signal_UINT8 TorqueStatus = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-RX_CAN_Message(1) EcuTorqueStatus{DriveBus, 0x20C, TorqueStatus};
-
-CAN_Signal_UINT8 EcuEnableResponse = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-CAN_Signal_UINT8 BmsEnableResponse = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
-CAN_Signal_UINT8 PdmEnableResponse = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
-RX_CAN_Message(3) CmRequestDrivetrain{DriveBus, 0x490, EcuEnableResponse, BmsEnableResponse, PdmEnableResponse};
-
-CAN_Signal_UINT8 DynamicsEnableResponse = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-CAN_Signal_UINT8 FrontEnableResponse = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
-CAN_Signal_UINT8 TelemetryEnableResponse = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
-RX_CAN_Message(3) CmRequestDaq{DriveBus, 0x491, DynamicsEnableResponse, FrontEnableResponse, TelemetryEnableResponse};
-
-CAN_Signal_UINT8 BlEnableResponse = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-CAN_Signal_UINT8 BrEnableResponse = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
-CAN_Signal_UINT8 FlEnableResponse = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
-CAN_Signal_UINT8 FrEnableResponse = MakeSignalExp(uint8_t, 24, 8, 1.0, 0.0);
-RX_CAN_Message(4) CmRequestWheel{DriveBus, 0x492, BlEnableResponse, BrEnableResponse, FlEnableResponse, FrEnableResponse};
-
-CAN_Signal_UINT64 Counter = MakeSignalExp(uint64_t, 0, 64, 1.0, 0.0);
-RX_CAN_Message(1) CmResponseEcu{DriveBus, 0x590, Counter};
-
-RX_CAN_Message(1) CmResponseBms{DriveBus, 0x591, Counter};
-
-RX_CAN_Message(1) CmResponsePdm{DriveBus, 0x592, Counter};
-
-RX_CAN_Message(1) CmResponseDynamics{DriveBus, 0x593, Counter};
-
-RX_CAN_Message(1) CmResponseFront{DriveBus, 0x594, Counter};
-
-RX_CAN_Message(1) CmResponseTelemetry{DriveBus, 0x595, Counter};
-
-RX_CAN_Message(1) CmResponseBl{DriveBus, 0x596, Counter};
-
-RX_CAN_Message(1) CmResponseBr{DriveBus, 0x597, Counter};
-
-RX_CAN_Message(1) CmResponseFl{DriveBus, 0x598, Counter};
-
-RX_CAN_Message(1) CmResponseFr{DriveBus, 0x599, Counter};
-
-CAN_Signal_UINT8 EcuStatus = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-CAN_Signal_UINT8 BmsStatus = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
-CAN_Signal_UINT8 PdmStatus = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
-RX_CAN_Message(3) CmNodeStatusDrivetrain{DriveBus, 0x192, EcuStatus, BmsStatus, PdmStatus};
-
-CAN_Signal_UINT8 DynamicsStatus = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-CAN_Signal_UINT8 FrontStatus = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
-CAN_Signal_UINT8 TelemetryStatus = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
-RX_CAN_Message(3) CmNodeStatusDaq{DriveBus, 0x193, DynamicsStatus, FrontStatus, TelemetryStatus};
-
-CAN_Signal_UINT8 BlStatus = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-CAN_Signal_UINT8 BrStatus = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
-CAN_Signal_UINT8 FlStatus = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
-CAN_Signal_UINT8 FrStatus = MakeSignalExp(uint8_t, 24, 8, 1.0, 0.0);
-RX_CAN_Message(4) CmNodeStatusWheel{DriveBus, 0x194, BlStatus, BrStatus, FlStatus, FrStatus};
-
-CAN_Signal_FLOAT MaxDischargeCurrent = MakeSignalSigned(float, 0, 12, 0.1, 0.0, True);
-CAN_Signal_FLOAT MaxRegenCurrent = MakeSignalSigned(float, 12, 12, 0.1, 0.0, True);
-CAN_Signal_FLOAT BatteryVoltage = MakeSignalSigned(float, 24, 16, 0.01, 0.0, True);
-CAN_Signal_FLOAT BatteryTemperature = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT BatteryCurrent = MakeSignalSigned(float, 48, 16, 0.01, -100.0, True);
-RX_CAN_Message(5) BmsSoe{DriveBus, 0x150, MaxDischargeCurrent, MaxRegenCurrent, BatteryVoltage, BatteryTemperature, BatteryCurrent};
-
-CAN_Signal_BOOL InternalfaultSummary = MakeSignalSigned(bool, 0, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL ExternalFault = MakeSignalSigned(bool, 1, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL UndervoltageFault = MakeSignalSigned(bool, 2, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL OvervoltageFault = MakeSignalSigned(bool, 3, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL UndertemperatureFault = MakeSignalSigned(bool, 4, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL OvertemperatureFault = MakeSignalSigned(bool, 5, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL OvercurrentFault = MakeSignalSigned(bool, 6, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL OpenWireFault = MakeSignalSigned(bool, 7, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL OpenWireTempFault = MakeSignalSigned(bool, 8, 1, 1.0, 0.0, True);
-CAN_Signal_BOOL PecFault = MakeSignalSigned(bool, 9, 1, 1.0, 0.0, True);
-CAN_Signal_UINT8 TotalPecFailures = MakeSignalExp(uint8_t, 10, 8, 1.0, 0.0);
-RX_CAN_Message(11) BmsFaults{DriveBus, 0x151, InternalfaultSummary, ExternalFault, UndervoltageFault, OvervoltageFault, UndertemperatureFault, OvertemperatureFault, OvercurrentFault, OpenWireFault, OpenWireTempFault, PecFault, TotalPecFailures};
-
-CAN_Signal_UINT8 BmsState = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
-CAN_Signal_UINT8 ImdState = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
-CAN_Signal_FLOAT MaxCellTemp = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT MinCellTemp = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT MaxCellVoltage = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT MinCellVoltage = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT BmsSoc = MakeSignalSigned(float, 48, 8, 0.004, 0.0, True);
-RX_CAN_Message(7) BmsStatus{DriveBus, 0x152, BmsState, ImdState, MaxCellTemp, MinCellTemp, MaxCellVoltage, MinCellVoltage, BmsSoc};
-
-CAN_Signal_FLOAT CellV0 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV1 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV2 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV3 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV4 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV5 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV6 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset0 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages0{DriveBus, 0x153, CellV0, CellV1, CellV2, CellV3, CellV4, CellV5, CellV6, CellOcvOffset0};
-
-CAN_Signal_FLOAT CellV7 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV8 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV9 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV10 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV11 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV12 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV13 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset1 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages1{DriveBus, 0x154, CellV7, CellV8, CellV9, CellV10, CellV11, CellV12, CellV13, CellOcvOffset1};
-
-CAN_Signal_FLOAT CellV14 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV15 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV16 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV17 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV18 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV19 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV20 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset2 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages2{DriveBus, 0x155, CellV14, CellV15, CellV16, CellV17, CellV18, CellV19, CellV20, CellOcvOffset2};
-
-CAN_Signal_FLOAT CellV21 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV22 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV23 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV24 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV25 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV26 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV27 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset3 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages3{DriveBus, 0x156, CellV21, CellV22, CellV23, CellV24, CellV25, CellV26, CellV27, CellOcvOffset3};
-
-CAN_Signal_FLOAT CellV28 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV29 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV30 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV31 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV32 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV33 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV34 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset4 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages4{DriveBus, 0x157, CellV28, CellV29, CellV30, CellV31, CellV32, CellV33, CellV34, CellOcvOffset4};
-
-CAN_Signal_FLOAT CellV35 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV36 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV37 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV38 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV39 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV40 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV41 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset5 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages5{DriveBus, 0x158, CellV35, CellV36, CellV37, CellV38, CellV39, CellV40, CellV41, CellOcvOffset5};
-
-CAN_Signal_FLOAT CellV42 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV43 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV44 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV45 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV46 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV47 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV48 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset6 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages6{DriveBus, 0x159, CellV42, CellV43, CellV44, CellV45, CellV46, CellV47, CellV48, CellOcvOffset6};
-
-CAN_Signal_FLOAT CellV49 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV50 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV51 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV52 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV53 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV54 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV55 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset7 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages7{DriveBus, 0x15A, CellV49, CellV50, CellV51, CellV52, CellV53, CellV54, CellV55, CellOcvOffset7};
-
-CAN_Signal_FLOAT CellV56 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV57 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV58 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV59 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV60 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV61 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV62 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset8 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages8{DriveBus, 0x15B, CellV56, CellV57, CellV58, CellV59, CellV60, CellV61, CellV62, CellOcvOffset8};
-
-CAN_Signal_FLOAT CellV63 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV64 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV65 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV66 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV67 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV68 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV69 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset9 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages9{DriveBus, 0x15C, CellV63, CellV64, CellV65, CellV66, CellV67, CellV68, CellV69, CellOcvOffset9};
-
-CAN_Signal_FLOAT CellV70 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV71 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV72 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV73 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV74 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV75 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV76 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset10 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages10{DriveBus, 0x15D, CellV70, CellV71, CellV72, CellV73, CellV74, CellV75, CellV76, CellOcvOffset10};
-
-CAN_Signal_FLOAT CellV77 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV78 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV79 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV80 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV81 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV82 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV83 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset11 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages11{DriveBus, 0x15E, CellV77, CellV78, CellV79, CellV80, CellV81, CellV82, CellV83, CellOcvOffset11};
-
-CAN_Signal_FLOAT CellV84 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV85 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV86 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV87 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV88 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV89 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV90 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset12 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages12{DriveBus, 0x15F, CellV84, CellV85, CellV86, CellV87, CellV88, CellV89, CellV90, CellOcvOffset12};
-
-CAN_Signal_FLOAT CellV91 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV92 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV93 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV94 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV95 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV96 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV97 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset13 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages13{DriveBus, 0x160, CellV91, CellV92, CellV93, CellV94, CellV95, CellV96, CellV97, CellOcvOffset13};
-
-CAN_Signal_FLOAT CellV98 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV99 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV100 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV101 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV102 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV103 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV104 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset14 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages14{DriveBus, 0x161, CellV98, CellV99, CellV100, CellV101, CellV102, CellV103, CellV104, CellOcvOffset14};
-
-CAN_Signal_FLOAT CellV105 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV106 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV107 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV108 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV109 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV110 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV111 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset15 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages15{DriveBus, 0x162, CellV105, CellV106, CellV107, CellV108, CellV109, CellV110, CellV111, CellOcvOffset15};
-
-CAN_Signal_FLOAT CellV112 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV113 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV114 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV115 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV116 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV117 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV118 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset16 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages16{DriveBus, 0x163, CellV112, CellV113, CellV114, CellV115, CellV116, CellV117, CellV118, CellOcvOffset16};
-
-CAN_Signal_FLOAT CellV119 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV120 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV121 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV122 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV123 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV124 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV125 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset17 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages17{DriveBus, 0x164, CellV119, CellV120, CellV121, CellV122, CellV123, CellV124, CellV125, CellOcvOffset17};
-
-CAN_Signal_FLOAT CellV126 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV127 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV128 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV129 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV130 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV131 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV132 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset18 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages18{DriveBus, 0x165, CellV126, CellV127, CellV128, CellV129, CellV130, CellV131, CellV132, CellOcvOffset18};
-
-CAN_Signal_FLOAT CellV133 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV134 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV135 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV136 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV137 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV138 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellV139 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
-CAN_Signal_FLOAT CellOcvOffset19 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
-RX_CAN_Message(8) BmsVoltages19{DriveBus, 0x166, CellV133, CellV134, CellV135, CellV136, CellV137, CellV138, CellV139, CellOcvOffset19};
-
-CAN_Signal_FLOAT CellT0 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT1 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT2 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT3 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT4 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT5 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT6 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT7 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures0{DriveBus, 0x167, CellT0, CellT1, CellT2, CellT3, CellT4, CellT5, CellT6, CellT7};
-
-CAN_Signal_FLOAT CellT8 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT9 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT10 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT11 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT12 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT13 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT14 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT15 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures1{DriveBus, 0x168, CellT8, CellT9, CellT10, CellT11, CellT12, CellT13, CellT14, CellT15};
-
-CAN_Signal_FLOAT CellT16 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT17 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT18 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT19 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT20 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT21 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT22 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT23 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures2{DriveBus, 0x169, CellT16, CellT17, CellT18, CellT19, CellT20, CellT21, CellT22, CellT23};
-
-CAN_Signal_FLOAT CellT24 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT25 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT26 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT27 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT28 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT29 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT30 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT31 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures3{DriveBus, 0x16A, CellT24, CellT25, CellT26, CellT27, CellT28, CellT29, CellT30, CellT31};
-
-CAN_Signal_FLOAT CellT32 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT33 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT34 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT35 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT36 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT37 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT38 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT39 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures4{DriveBus, 0x16B, CellT32, CellT33, CellT34, CellT35, CellT36, CellT37, CellT38, CellT39};
-
-CAN_Signal_FLOAT CellT40 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT41 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT42 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT43 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT44 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT45 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT46 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT47 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures5{DriveBus, 0x16C, CellT40, CellT41, CellT42, CellT43, CellT44, CellT45, CellT46, CellT47};
-
-CAN_Signal_FLOAT CellT48 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT49 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT50 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT51 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT52 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT53 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT54 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT55 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures6{DriveBus, 0x16D, CellT48, CellT49, CellT50, CellT51, CellT52, CellT53, CellT54, CellT55};
-
-CAN_Signal_FLOAT CellT56 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT57 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT58 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT59 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT60 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT61 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT62 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT63 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures7{DriveBus, 0x16E, CellT56, CellT57, CellT58, CellT59, CellT60, CellT61, CellT62, CellT63};
-
-CAN_Signal_FLOAT CellT64 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT65 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT66 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT67 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT68 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT69 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT70 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT71 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures8{DriveBus, 0x16F, CellT64, CellT65, CellT66, CellT67, CellT68, CellT69, CellT70, CellT71};
-
-CAN_Signal_FLOAT CellT72 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT73 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT74 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT75 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT76 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT77 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT78 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
-CAN_Signal_FLOAT CellT79 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
-RX_CAN_Message(8) BmsTemperatures9{DriveBus, 0x170, CellT72, CellT73, CellT74, CellT75, CellT76, CellT77, CellT78, CellT79};
-
-CAN_Signal_UINT64 ControllerError = MakeSignalExp(uint64_t, 0, 64, 1.0, 0.0);
-RX_CAN_Message(1) Can2usbControllerError{DriveBus, 0x004, ControllerError};
-
-CAN_Signal_UINT64 ControllerErrorNack = MakeSignalExp(uint64_t, 0, 64, 1.0, 0.0);
-RX_CAN_Message(1) Can2usbControllerErrorNackError{DriveBus, 0x024, ControllerErrorNack};
-
-CAN_Signal_UINT64 ControllerErrorProtocolViolation = MakeSignalExp(uint64_t, 0, 64, 1.0, 0.0);
-RX_CAN_Message(1) Can2usbControllerErrorProtocolViolation{DriveBus, 0x00C, ControllerErrorProtocolViolation};
+CAN_Signal_BOOL igbtTempLimiting = MakeSignalSigned(bool, 0, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL batteryTempLimiting = MakeSignalSigned(bool, 1, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL motorTempLimiting = MakeSignalSigned(bool, 2, 1, 1.0, 0.0, True);
+RX_CAN_Message(3) ecuTempLimitingStatus{driveBus, 0x20B, igbtTempLimiting, batteryTempLimiting, motorTempLimiting};
+
+CAN_Signal_UINT8 torqueStatus = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+RX_CAN_Message(1) ecuTorqueStatus{driveBus, 0x20C, torqueStatus};
+
+CAN_Signal_UINT8 ecuEnableResponse = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+CAN_Signal_UINT8 bmsEnableResponse = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
+CAN_Signal_UINT8 pdmEnableResponse = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
+RX_CAN_Message(3) cmRequestDrivetrain{driveBus, 0x490, ecuEnableResponse, bmsEnableResponse, pdmEnableResponse};
+
+CAN_Signal_UINT8 dynamicsEnableResponse = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+CAN_Signal_UINT8 frontEnableResponse = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
+CAN_Signal_UINT8 telemetryEnableResponse = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
+RX_CAN_Message(3) cmRequestDaq{driveBus, 0x491, dynamicsEnableResponse, frontEnableResponse, telemetryEnableResponse};
+
+CAN_Signal_UINT8 blEnableResponse = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+CAN_Signal_UINT8 brEnableResponse = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
+CAN_Signal_UINT8 flEnableResponse = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
+CAN_Signal_UINT8 frEnableResponse = MakeSignalExp(uint8_t, 24, 8, 1.0, 0.0);
+RX_CAN_Message(4) cmRequestWheel{driveBus, 0x492, blEnableResponse, brEnableResponse, flEnableResponse, frEnableResponse};
+
+CAN_Signal_UINT64 counter = MakeSignalExp(uint64_t, 0, 64, 1.0, 0.0);
+RX_CAN_Message(1) cmResponseEcu{driveBus, 0x590, counter};
+
+RX_CAN_Message(1) cmResponseBms{driveBus, 0x591, counter};
+
+RX_CAN_Message(1) cmResponsePdm{driveBus, 0x592, counter};
+
+RX_CAN_Message(1) cmResponseDynamics{driveBus, 0x593, counter};
+
+RX_CAN_Message(1) cmResponseFront{driveBus, 0x594, counter};
+
+RX_CAN_Message(1) cmResponseTelemetry{driveBus, 0x595, counter};
+
+RX_CAN_Message(1) cmResponseBl{driveBus, 0x596, counter};
+
+RX_CAN_Message(1) cmResponseBr{driveBus, 0x597, counter};
+
+RX_CAN_Message(1) cmResponseFl{driveBus, 0x598, counter};
+
+RX_CAN_Message(1) cmResponseFr{driveBus, 0x599, counter};
+
+CAN_Signal_UINT8 ecuStatus = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+CAN_Signal_UINT8 bmsStatus = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
+CAN_Signal_UINT8 pdmStatus = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
+RX_CAN_Message(3) cmNodeStatusDrivetrain{driveBus, 0x192, ecuStatus, bmsStatus, pdmStatus};
+
+CAN_Signal_UINT8 dynamicsStatus = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+CAN_Signal_UINT8 frontStatus = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
+CAN_Signal_UINT8 telemetryStatus = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
+RX_CAN_Message(3) cmNodeStatusDaq{driveBus, 0x193, dynamicsStatus, frontStatus, telemetryStatus};
+
+CAN_Signal_UINT8 blStatus = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+CAN_Signal_UINT8 brStatus = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
+CAN_Signal_UINT8 flStatus = MakeSignalExp(uint8_t, 16, 8, 1.0, 0.0);
+CAN_Signal_UINT8 frStatus = MakeSignalExp(uint8_t, 24, 8, 1.0, 0.0);
+RX_CAN_Message(4) cmNodeStatusWheel{driveBus, 0x194, blStatus, brStatus, flStatus, frStatus};
+
+CAN_Signal_FLOAT maxDischargeCurrent = MakeSignalSigned(float, 0, 12, 0.1, 0.0, True);
+CAN_Signal_FLOAT maxRegenCurrent = MakeSignalSigned(float, 12, 12, 0.1, 0.0, True);
+CAN_Signal_FLOAT batteryVoltage = MakeSignalSigned(float, 24, 16, 0.01, 0.0, True);
+CAN_Signal_FLOAT batteryTemperature = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT batteryCurrent = MakeSignalSigned(float, 48, 16, 0.01, -100.0, True);
+RX_CAN_Message(5) bmsSoe{driveBus, 0x150, maxDischargeCurrent, maxRegenCurrent, batteryVoltage, batteryTemperature, batteryCurrent};
+
+CAN_Signal_BOOL internalfaultSummary = MakeSignalSigned(bool, 0, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL externalFault = MakeSignalSigned(bool, 1, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL undervoltageFault = MakeSignalSigned(bool, 2, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL overvoltageFault = MakeSignalSigned(bool, 3, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL undertemperatureFault = MakeSignalSigned(bool, 4, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL overtemperatureFault = MakeSignalSigned(bool, 5, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL overcurrentFault = MakeSignalSigned(bool, 6, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL openWireFault = MakeSignalSigned(bool, 7, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL openWireTempFault = MakeSignalSigned(bool, 8, 1, 1.0, 0.0, True);
+CAN_Signal_BOOL pecFault = MakeSignalSigned(bool, 9, 1, 1.0, 0.0, True);
+CAN_Signal_UINT8 totalPecFailures = MakeSignalExp(uint8_t, 10, 8, 1.0, 0.0);
+RX_CAN_Message(11) bmsFaults{driveBus, 0x151, internalfaultSummary, externalFault, undervoltageFault, overvoltageFault, undertemperatureFault, overtemperatureFault, overcurrentFault, openWireFault, openWireTempFault, pecFault, totalPecFailures};
+
+CAN_Signal_UINT8 bmsState = MakeSignalExp(uint8_t, 0, 8, 1.0, 0.0);
+CAN_Signal_UINT8 imdState = MakeSignalExp(uint8_t, 8, 8, 1.0, 0.0);
+CAN_Signal_FLOAT maxCellTemp = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT minCellTemp = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT maxCellVoltage = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT minCellVoltage = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT bmsSoc = MakeSignalSigned(float, 48, 8, 0.004, 0.0, True);
+RX_CAN_Message(7) bmsStatus{driveBus, 0x152, bmsState, imdState, maxCellTemp, minCellTemp, maxCellVoltage, minCellVoltage, bmsSoc};
+
+CAN_Signal_FLOAT cellV0 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV1 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV2 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV3 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV4 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV5 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV6 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset0 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages0{driveBus, 0x153, cellV0, cellV1, cellV2, cellV3, cellV4, cellV5, cellV6, cellOcvOffset0};
+
+CAN_Signal_FLOAT cellV7 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV8 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV9 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV10 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV11 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV12 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV13 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset1 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages1{driveBus, 0x154, cellV7, cellV8, cellV9, cellV10, cellV11, cellV12, cellV13, cellOcvOffset1};
+
+CAN_Signal_FLOAT cellV14 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV15 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV16 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV17 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV18 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV19 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV20 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset2 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages2{driveBus, 0x155, cellV14, cellV15, cellV16, cellV17, cellV18, cellV19, cellV20, cellOcvOffset2};
+
+CAN_Signal_FLOAT cellV21 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV22 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV23 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV24 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV25 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV26 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV27 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset3 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages3{driveBus, 0x156, cellV21, cellV22, cellV23, cellV24, cellV25, cellV26, cellV27, cellOcvOffset3};
+
+CAN_Signal_FLOAT cellV28 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV29 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV30 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV31 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV32 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV33 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV34 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset4 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages4{driveBus, 0x157, cellV28, cellV29, cellV30, cellV31, cellV32, cellV33, cellV34, cellOcvOffset4};
+
+CAN_Signal_FLOAT cellV35 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV36 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV37 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV38 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV39 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV40 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV41 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset5 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages5{driveBus, 0x158, cellV35, cellV36, cellV37, cellV38, cellV39, cellV40, cellV41, cellOcvOffset5};
+
+CAN_Signal_FLOAT cellV42 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV43 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV44 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV45 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV46 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV47 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV48 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset6 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages6{driveBus, 0x159, cellV42, cellV43, cellV44, cellV45, cellV46, cellV47, cellV48, cellOcvOffset6};
+
+CAN_Signal_FLOAT cellV49 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV50 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV51 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV52 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV53 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV54 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV55 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset7 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages7{driveBus, 0x15A, cellV49, cellV50, cellV51, cellV52, cellV53, cellV54, cellV55, cellOcvOffset7};
+
+CAN_Signal_FLOAT cellV56 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV57 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV58 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV59 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV60 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV61 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV62 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset8 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages8{driveBus, 0x15B, cellV56, cellV57, cellV58, cellV59, cellV60, cellV61, cellV62, cellOcvOffset8};
+
+CAN_Signal_FLOAT cellV63 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV64 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV65 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV66 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV67 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV68 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV69 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset9 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages9{driveBus, 0x15C, cellV63, cellV64, cellV65, cellV66, cellV67, cellV68, cellV69, cellOcvOffset9};
+
+CAN_Signal_FLOAT cellV70 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV71 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV72 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV73 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV74 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV75 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV76 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset10 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages10{driveBus, 0x15D, cellV70, cellV71, cellV72, cellV73, cellV74, cellV75, cellV76, cellOcvOffset10};
+
+CAN_Signal_FLOAT cellV77 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV78 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV79 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV80 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV81 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV82 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV83 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset11 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages11{driveBus, 0x15E, cellV77, cellV78, cellV79, cellV80, cellV81, cellV82, cellV83, cellOcvOffset11};
+
+CAN_Signal_FLOAT cellV84 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV85 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV86 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV87 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV88 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV89 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV90 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset12 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages12{driveBus, 0x15F, cellV84, cellV85, cellV86, cellV87, cellV88, cellV89, cellV90, cellOcvOffset12};
+
+CAN_Signal_FLOAT cellV91 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV92 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV93 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV94 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV95 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV96 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV97 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset13 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages13{driveBus, 0x160, cellV91, cellV92, cellV93, cellV94, cellV95, cellV96, cellV97, cellOcvOffset13};
+
+CAN_Signal_FLOAT cellV98 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV99 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV100 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV101 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV102 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV103 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV104 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset14 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages14{driveBus, 0x161, cellV98, cellV99, cellV100, cellV101, cellV102, cellV103, cellV104, cellOcvOffset14};
+
+CAN_Signal_FLOAT cellV105 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV106 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV107 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV108 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV109 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV110 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV111 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset15 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages15{driveBus, 0x162, cellV105, cellV106, cellV107, cellV108, cellV109, cellV110, cellV111, cellOcvOffset15};
+
+CAN_Signal_FLOAT cellV112 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV113 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV114 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV115 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV116 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV117 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV118 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset16 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages16{driveBus, 0x163, cellV112, cellV113, cellV114, cellV115, cellV116, cellV117, cellV118, cellOcvOffset16};
+
+CAN_Signal_FLOAT cellV119 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV120 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV121 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV122 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV123 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV124 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV125 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset17 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages17{driveBus, 0x164, cellV119, cellV120, cellV121, cellV122, cellV123, cellV124, cellV125, cellOcvOffset17};
+
+CAN_Signal_FLOAT cellV126 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV127 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV128 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV129 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV130 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV131 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV132 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset18 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages18{driveBus, 0x165, cellV126, cellV127, cellV128, cellV129, cellV130, cellV131, cellV132, cellOcvOffset18};
+
+CAN_Signal_FLOAT cellV133 = MakeSignalSigned(float, 0, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV134 = MakeSignalSigned(float, 8, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV135 = MakeSignalSigned(float, 16, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV136 = MakeSignalSigned(float, 24, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV137 = MakeSignalSigned(float, 32, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV138 = MakeSignalSigned(float, 40, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellV139 = MakeSignalSigned(float, 48, 8, 0.012, 2.0, True);
+CAN_Signal_FLOAT cellOcvOffset19 = MakeSignalSigned(float, 56, 8, 0.004, 0.0, True);
+RX_CAN_Message(8) bmsVoltages19{driveBus, 0x166, cellV133, cellV134, cellV135, cellV136, cellV137, cellV138, cellV139, cellOcvOffset19};
+
+CAN_Signal_FLOAT cellT0 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT1 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT2 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT3 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT4 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT5 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT6 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT7 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures0{driveBus, 0x167, cellT0, cellT1, cellT2, cellT3, cellT4, cellT5, cellT6, cellT7};
+
+CAN_Signal_FLOAT cellT8 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT9 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT10 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT11 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT12 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT13 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT14 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT15 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures1{driveBus, 0x168, cellT8, cellT9, cellT10, cellT11, cellT12, cellT13, cellT14, cellT15};
+
+CAN_Signal_FLOAT cellT16 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT17 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT18 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT19 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT20 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT21 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT22 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT23 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures2{driveBus, 0x169, cellT16, cellT17, cellT18, cellT19, cellT20, cellT21, cellT22, cellT23};
+
+CAN_Signal_FLOAT cellT24 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT25 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT26 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT27 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT28 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT29 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT30 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT31 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures3{driveBus, 0x16A, cellT24, cellT25, cellT26, cellT27, cellT28, cellT29, cellT30, cellT31};
+
+CAN_Signal_FLOAT cellT32 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT33 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT34 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT35 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT36 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT37 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT38 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT39 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures4{driveBus, 0x16B, cellT32, cellT33, cellT34, cellT35, cellT36, cellT37, cellT38, cellT39};
+
+CAN_Signal_FLOAT cellT40 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT41 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT42 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT43 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT44 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT45 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT46 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT47 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures5{driveBus, 0x16C, cellT40, cellT41, cellT42, cellT43, cellT44, cellT45, cellT46, cellT47};
+
+CAN_Signal_FLOAT cellT48 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT49 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT50 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT51 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT52 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT53 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT54 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT55 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures6{driveBus, 0x16D, cellT48, cellT49, cellT50, cellT51, cellT52, cellT53, cellT54, cellT55};
+
+CAN_Signal_FLOAT cellT56 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT57 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT58 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT59 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT60 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT61 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT62 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT63 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures7{driveBus, 0x16E, cellT56, cellT57, cellT58, cellT59, cellT60, cellT61, cellT62, cellT63};
+
+CAN_Signal_FLOAT cellT64 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT65 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT66 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT67 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT68 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT69 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT70 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT71 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures8{driveBus, 0x16F, cellT64, cellT65, cellT66, cellT67, cellT68, cellT69, cellT70, cellT71};
+
+CAN_Signal_FLOAT cellT72 = MakeSignalSigned(float, 0, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT73 = MakeSignalSigned(float, 8, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT74 = MakeSignalSigned(float, 16, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT75 = MakeSignalSigned(float, 24, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT76 = MakeSignalSigned(float, 32, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT77 = MakeSignalSigned(float, 40, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT78 = MakeSignalSigned(float, 48, 8, 1.0, -40.0, True);
+CAN_Signal_FLOAT cellT79 = MakeSignalSigned(float, 56, 8, 1.0, -40.0, True);
+RX_CAN_Message(8) bmsTemperatures9{driveBus, 0x170, cellT72, cellT73, cellT74, cellT75, cellT76, cellT77, cellT78, cellT79};
+
+CAN_Signal_UINT64 controllerError = MakeSignalExp(uint64_t, 0, 64, 1.0, 0.0);
+RX_CAN_Message(1) can2usbControllerError{driveBus, 0x004, controllerError};
+
+CAN_Signal_UINT64 controllerErrorNack = MakeSignalExp(uint64_t, 0, 64, 1.0, 0.0);
+RX_CAN_Message(1) can2usbControllerErrorNackError{driveBus, 0x024, controllerErrorNack};
+
+CAN_Signal_UINT64 controllerErrorProtocolViolation = MakeSignalExp(uint64_t, 0, 64, 1.0, 0.0);
+RX_CAN_Message(1) can2usbControllerErrorProtocolViolation{driveBus, 0x00C, controllerErrorProtocolViolation};
 
 }
