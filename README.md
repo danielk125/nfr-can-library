@@ -62,7 +62,7 @@ py can_gen.py dbc_file [OPTIONS]
 ```
 -h --help                 Print the help text 
 -o --output_file          Provide a designated output file. Default is "can_dbc.hpp"
--c --convention           Provide a naming convention. Default is PascalCase.
+-c --convention           Provide a naming convention. Default is PascalCase. Supports PascalCase, snake_case, and camelCase. 
 ```
 
 ---
@@ -86,6 +86,7 @@ py can_gen.py dbc_file [OPTIONS]
 ## Credits
 - **Daniel Kramer** -- `danielk125`
 - **Jalil Hemphill** -- `jalilhemphill1`
+
 
 
 
