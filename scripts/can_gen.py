@@ -36,12 +36,19 @@ def generate_can_code(db_file, naming_convention, output_file):
         file_w_str += "}"
         f.write(file_w_str)
         
-parser = argparse.ArgumentParser()
-parser.add_argument("dbc_file", help="DBC file that is read and utilized to generate the cpp code.")
-parser.add_argument("-o", "--output_file", help = "Provide a designated output file. Default is can_dbc.hpp", default="can_dbc.hpp")
-parser.add_argument("-c", "--convention", help="Provide a naming convention. Default is PascalCase", default="PascalCase")
-args = parser.parse_args()
-dbc_file = args.dbc_file
-output_file = args.output_file
-naming_convention = args.convention
-generate_can_code(dbc_file, naming_convention, output_file)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("dbc_file", help="DBC file that is read and utilized to generate the cpp code.")
+    parser.add_argument("-o", "--output_file", help = "Provide a designated output file. Default is can_dbc.hpp", default="can_dbc.hpp")
+    parser.add_argument("-c", "--convention", help="Provide a naming convention. Default is PascalCase", default="PascalCase")
+    args = parser.parse_args()
+
+    dbc_file = args.dbc_file
+    output_file = args.output_file
+    naming_convention = args.convention
+    generate_can_code(dbc_file, naming_convention, output_file)
+
+
+if __name__ == "__main__":
+    main()

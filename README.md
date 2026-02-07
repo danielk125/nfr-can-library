@@ -1,7 +1,6 @@
 ﻿# nfr-can-library
 At its core, this project provides a clean, cross-platform interface for communicating over the CAN communication protocol. This is accomlished by using PIMPL and dependency-injection design principles to minimize the amount of platform-specific code. Provided in this repo is a driver for `MCP2515` CAN controller and SPI, GPIO, and clock implementations for ESP32 using Arduino. Also provided are python scripts used to auto-generate library code using a DBC file.
 
----
 
 ## Project Explanation
 The CAN interface (`CAN_interface.h`) describes the functionality that users can interract with when communicating over CAN. The interface defines objects like `CAN_Bus`, `CAN_Message`, and `CAN_Signal`. The bus is essentially the CAN manager. All sending, receiving, and updating of messages happens through the bus. Messages are objects which store related signals and metadata for transmitting information such as message ID, number of used bytes, etc. Messages are not owned by a bus. However, they are managed by one (and only one) bus. Signals store the actual value of interest and define the value's type as well as information on how to decode and encode the value. Signals are used to construct messages.
@@ -14,7 +13,6 @@ Where `CAN_Frame` is the unit of transmission. Frames are converted to and from 
 
 Depending on the platform which the code is compiled for, implementations for `ISpi`, `IGpio`, and `IClock` abstract classes may be needed to help the driver interact with an external controller. These implementations will be platform-specific. `ICAN` implementations will take pointers to implementations for each of these abstract classes.
 
----
 
 ## Library Usage
 ### Signals
@@ -47,25 +45,24 @@ Additionally, `RX_can_msg_config` and `TX_can_msg_config` structs are provided t
 
 The main function of interest is `tick_bus()`, which empties any RX buffer held by the CAN implementation and updates all managed messages accordingly.
 
----
 
 ## Auto Generating Code
 
 Signals and messages from a provided DBC file can be auto-generated into a C++ file utilizing a python script. The necessary includes are provided and these signals and messages are encapsulated into a namespace.
 
+Make sure to activate the virtual environment before running the script. The `requirements.txt` file is provided in `scripts/requirements.txt`
+
 
 ```
-py can_gen.py dbc_file [OPTIONS]
+py can_gen.py [OPTIONS] dbc_file
 ```
 
-# Options
+### Options
 ```
 -h --help                 Print the help text 
 -o --output_file          Provide a designated output file. Default is "can_dbc.hpp"
 -c --convention           Provide a naming convention. Default is PascalCase. Supports PascalCase, snake_case, and camelCase. 
 ```
-
----
 
 ## Requirements
 ### Library
@@ -77,11 +74,16 @@ py can_gen.py dbc_file [OPTIONS]
 + `pandas`
 + `cantools`
 
----
 
 ## Linking to Other Projects
 
----
+To link, simply call `add_subdirectory(path/to/this/library)`. This will generate a static library called `nfr_canlib` which can be linked to other projects.
+
+For example:
+
+```
+target_link_libraries(your_project PRIVATE nfr_canlib)
+```
 
 ## Credits
 - **Daniel Kramer** -- `danielk125`
