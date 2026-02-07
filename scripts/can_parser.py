@@ -1,6 +1,5 @@
 import cantools.database
 import cantools
-import time
 
 MANDATORY_COLUMNS = {
     "Message ID": "hex",
@@ -18,11 +17,11 @@ MANDATORY_COLUMNS = {
     "Data Type": "str",
 }
 
-naming_conventions = ["camelCase", "PascalCase", "snake_case"]
+naming_conventions = ["camelCase", "PascalCase", "snake_case", "snakecase"]
 
 def convert_name_convention(name, convention):
     # Do not worry about casing of the provided naming convention 
-    convention = naming_conventions[naming_conventions.index(convention.lower())]
+    convention = naming_conventions[list(map(str.lower, naming_conventions)).index(convention.lower())]
     name = name.lower()
     name_lst = name.split("_")
     match convention:
@@ -35,7 +34,7 @@ def convert_name_convention(name, convention):
             name_lst = [word.capitalize() for word in name_lst]
             converted_name = "".join(name_lst)
             return converted_name
-        case "snake_case":
+        case "snake_case" | "snakecase":
             return name
         case _:
             raise NameError("Need to provide a valid convention type.")
@@ -105,9 +104,11 @@ class CANSignal:
 
     def as_cpp_code(self, naming_convention):
         """
-        Return the C++ code that represents this signal. The code should be in the following format:
-        CANSignal using the MakeSignedCANSignal(SignalType, position, length, factor, offset) or
-        MakeUnsignedCANSignal(SignalType, position, length, factor, offset) macro. There are no constructor arguments
+        Return the C++ code that represents this signal. 
+        It is in the format of either:
+        CAN_Signal_DataType signal_name = MakeSignalSigned(Data Type, Start Bit, Length, Factor, Offset);
+        or
+        CAN_Signal_DataType signal_name = MakeSignalExp(Data Type, Start Bit, Length, Factor, IsSigned);
         """
         # is the data_type unsigned?
         data_type = "unknown" if self.data_type == "" else self.data_type
@@ -225,35 +226,15 @@ class CANMessage:
         return message_size_bytes
 
     def get_cpp_message_name(self, cpp_bus_name, naming_convention):
-        """ cpp_name = f"{cpp_bus_name}_{self.message_name}"
-        # cleanup the message name
-        cpp_name = cpp_name.strip()
-        # replace all non-alphanumeric characters with underscores
-        cpp_name = "".join([c if c.isalnum() else "_" for c in cpp_name])
-        # remove any leading underscores
-        cpp_name = cpp_name.lstrip("_")
-        # set the message name to lowercase
-        cpp_name = cpp_name.lower() """
-
         return convert_name_convention(self.message_name, naming_convention)
 
     def as_cpp_transmit_code(self, cpp_bus_name, naming_convention):
         """
-        Return the C++ code that represents this message. The code should be in the following format:
-        CANTXMessage takes the CAN bus to transmit on, the message ID, the message size in bytes (based on the end position
-        of the highest signal), the transmit period, and the signals as arguments
-        CANTXMessage can also take a VirtualTimerGroup to add its transmit timer to.
-        For example:
-        CANTXMessage<4> tx_message{
-            can_bus, 0x100, 8, 100, timer_group, float_tx_signal, uint8_t_tx_signal, bool_tx_signal, millis_tx_signal};
+        Return the C++ code that represents this message.
+        It is returned in the format of:
+        TX_CAN_Message
         """
 
-        cpp_code = "\n".join(
-            [
-                f"{signal.as_cpp_code(naming_convention)}"
-                for signal in self.signals
-            ]
-        )
 
         message_size_bytes = self.get_message_size_bytes()
 
@@ -267,12 +248,9 @@ class CANMessage:
             ]
         )
 
-        # print(cpp_code)
-
         message_name = self.get_cpp_message_name(cpp_bus_name, naming_convention)
         message_code = f"TX_CAN_Message({num_signals}) {message_name}{{{cpp_bus_name}, {self.message_id}, {message_size_bytes}, {self.cycle_time}, {signal_list}}};"
-        # print(message_code)
-        return cpp_code + "\n\n" + message_code
+        return message_code
 
     def as_cpp_receive_code(self, cpp_bus_name, naming_convention):
         """
@@ -288,12 +266,7 @@ class CANMessage:
                                    bool_rx_signal,
                                    millis_rx_signal};
         """    
-        cpp_code = "\n".join(
-            [
-                f"{signal.as_cpp_code(naming_convention)}"
-                for signal in self.signals
-            ]
-        )
+        
 
         num_signals = len(self.signals)
         signal_list = ", ".join(
@@ -305,12 +278,12 @@ class CANMessage:
             ]
         )
 
-        # print(cpp_code)
+        
         message_name = self.get_cpp_message_name(cpp_bus_name, naming_convention)
         message_code = f"RX_CAN_Message({num_signals}) {message_name}{{{cpp_bus_name}, {self.message_id}, {signal_list}}};"
-        # print(message_code)
+       
 
-        return cpp_code + "\n\n" + message_code
+        return message_code
 
     def as_cantools_representation(self):
         """
@@ -584,7 +557,9 @@ class CANDatabase:
 
             if x == "":
                 return False
-            
+            if x != x:
+                return False
+                
             if x.lower() in ["true", "t", "yes", "y"]:
                 return True
             elif x.lower() in ["false", "f", "no", "n"]:
@@ -601,6 +576,7 @@ class CANDatabase:
             col_index = i
             for row in rows:
                 try:
+                    
                     row[col_index] = bool_cast(row[col_index])
                 except ValueError:
                     error_messages.append(f"Column '{column_name}' should be of type 'bool'")
