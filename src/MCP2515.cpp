@@ -1,7 +1,6 @@
 #include "../include/nfr_can/MCP2515.hpp"
 #include <cstring>
-#include <Arduino.h>
-
+#include <iostream>
 
 void MCP2515::select(bool set){
     _cs.gpio_write(set ? GpioLevel::G_LOW : GpioLevel::G_HIGH);
@@ -190,9 +189,14 @@ bool MCP2515::begin(const BaudRate baud) {
 
 bool MCP2515::send(const CAN_Frame& msg) {
   uint8_t txctrl = 0;
-  if (!readRegister(REG_TXB0CTRL, txctrl)) return false;
+  if (!readRegister(REG_TXB0CTRL, txctrl)) {
+    std::cout << "Failed to read TXB0CTRL" << std::endl;
+    return false;
+  }
+
   if (txctrl & TXBCTRL_TXREQ) {
     // busy
+    std::cout << "TXB0 is busy" << std::endl;
     return false;
   }
 
@@ -203,7 +207,10 @@ bool MCP2515::send(const CAN_Frame& msg) {
   uint8_t txdlc = dlc & 0x0F;
 
   uint8_t hdr[5]{ sidh, sidl, eid8, eid0, txdlc };
-  if (!writeRegisters(REG_TXB0SIDH, hdr, 5)) return false;
+  if (!writeRegisters(REG_TXB0SIDH, hdr, 5)) {
+    std::cout << "Failed to write TXB0SIDH" << std::endl;
+    return false;
+  }
 
   uint8_t buf[8];
   for (int i = 0; i < 8; i++){
@@ -211,13 +218,21 @@ bool MCP2515::send(const CAN_Frame& msg) {
   }
 
   if (dlc > 0) {
-    if (!writeRegisters(REG_TXB0D0, buf, dlc)) return false;
+    if (!writeRegisters(REG_TXB0D0, buf, dlc)) {
+      std::cout << "Failed to write TXB0D0" << std::endl;
+      return false;
+    }
   }
 
   uint8_t cmd = CMD_RTS_TX0;
   select(true);
   bool ok = _spi.ISpi_write(&cmd, 1);
   select(false);
+  if (!ok) {
+    std::cout << "Failed to send command" << std::endl;
+    return false;
+  }
+
   return ok;
 }
 

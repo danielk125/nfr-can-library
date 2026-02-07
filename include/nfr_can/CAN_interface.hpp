@@ -1,5 +1,4 @@
 #include "ICAN.hpp"
-#include "virtualTimer.h"
 
 #include <cassert>
 #include <cmath>
@@ -7,8 +6,10 @@
 #include <memory>
 #include <functional>
 #include <type_traits>
+#include <cstring>
 
-#include <Arduino.h>
+#include "virtual_timer.hpp"
+
 
 // Bit helpers -- defined at the bottom
 static inline uint8_t  getBit(const std::array<uint8_t, 8>& data, uint16_t bitIndex);

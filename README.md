@@ -55,7 +55,7 @@ Signals and messages from a provided DBC file can be auto-generated into a C++ f
 
 
 ```
-generate_can dbc_file [OPTIONS]
+py can_gen.py dbc_file [OPTIONS]
 ```
 
 # Options
@@ -86,5 +86,6 @@ generate_can dbc_file [OPTIONS]
 ## Credits
 - **Daniel Kramer** -- `danielk125`
 - **Jalil Hemphill** -- `jalilhemphill1`
+
 
 

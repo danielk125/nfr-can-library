@@ -1,4 +1,4 @@
-#ifndef IPSI_HPP
+#ifndef ISPI_HPP
 #define ISPI_HPP
 
 #include <cstddef>
