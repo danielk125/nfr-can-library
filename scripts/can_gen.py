@@ -21,22 +21,21 @@ def generate_can_code(db_file, naming_convention, output_file):
         
         # Provide namespace wrapper
         file_w_str += "namespace CANDBC {\n"
+
         for message in messages:
             signals = message.get_signals()
             for signal in signals:
                 signal_str = signal.as_cpp_code(naming_convention)
+                # Ensure there are no duplicate signals for different messages
                 if signal_str not in file_w_str:
                     file_w_str += f"{signal_str}\n"
-                # f.write(signal_str + "\n")
-
+                
             bus = buses[0].get_cpp_bus_name(naming_convention)
             can_msg_str = message.as_cpp_receive_code(bus, naming_convention)
             file_w_str += f"{can_msg_str}\n\n"
         file_w_str += "}"
         f.write(file_w_str)
         
-        
-
 parser = argparse.ArgumentParser()
 parser.add_argument("dbc_file", help="DBC file that is read and utilized to generate the cpp code.")
 parser.add_argument("-o", "--output_file", help = "Provide a designated output file. Default is can_dbc.hpp", default="can_dbc.hpp")
