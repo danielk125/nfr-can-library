@@ -1,5 +1,6 @@
 import cantools.database
 import cantools
+import math
 
 MANDATORY_COLUMNS = {
     "Message ID": "hex",
@@ -87,8 +88,13 @@ class CANSignal:
         self.bit_length = max(1, bit_length)
         self.factor = factor
         self.offset = offset
-        self.data_min = data_min
-        self.data_max = data_max
+        if "int" in data_type:
+            self.data_min = int(data_min)
+            self.data_max = int(data_max)
+        else:
+            self.data_min = data_min
+            self.data_max = data_max
+
         self.unit = unit
         self.data_type = data_type
         self.message = None
@@ -123,9 +129,30 @@ class CANSignal:
         macro = "MakeSignalSigned" if not is_unsigned else "MakeSignalExp"
         signal_name = self.get_cpp_signal_name(naming_convention)
         if is_unsigned:
-            return f"CAN_Signal_{data_type.upper().removesuffix('_T')} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset}, true);"
+            return f"CAN_Signal_{data_type.upper().removesuffix('_T')} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset});"
         else:
             return f"CAN_Signal_{data_type.upper().removesuffix('_T')} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset}, false);"
+        
+    def as_cpp_min_max_code(self, naming_convention):
+        min_name = convert_name_convention(f"{self.signal_name}_min", naming_convention)
+        max_name = convert_name_convention(f"{self.signal_name}_max", naming_convention)
+
+        if self.data_type == "" or self.data_type == None:
+            return
+
+        data_type = self.data_type
+        if data_type == "unsigned_float":
+            data_type = "float"
+
+        if data_type == "bool":
+            return ""
+
+        if self.data_min is not None:
+            return f"static constexpr {data_type} {min_name}{{ {self.data_min} }};"
+        
+        if self.data_max is not None:
+            return f"static constexpr {data_type} {max_name}{{ {self.data_min} }};"
+
 
     def as_cantools_representation(self):
         """
@@ -200,9 +227,24 @@ class CANMessage:
         self.signals.append(signal)
 
     def message_id_as_integer(self):
+        if self.message_id is None:
+            raise ValueError("Message ID is None")
+        
+        # if the message id is already an integer, return it
+        if isinstance(self.message_id, int):
+            return self.message_id
+        
+        # if the message id is a float, return the integer part
+        if isinstance(self.message_id, float):
+            # if this is NaN, return 0
+            if math.isnan(self.message_id):
+                return 0
+
+            return int(self.message_id)
+
         # message id should be a hex string that starts with '0x'
         # after the '0x', there should be only hex characters
-        if self.message_id is None or not self.message_id.startswith("0x"):
+        if self.message_id.startswith("0x"):
             return 0xFF
 
         message_id = self.message_id[2:]
@@ -214,7 +256,6 @@ class CANMessage:
     def is_extended_id(self):
         message_id = self.message_id_as_integer()
         return message_id > 0x7FF
-    
         
     
     def get_message_size_bytes(self):
@@ -256,7 +297,7 @@ class CANMessage:
         message_code = f"TX_CAN_Message({num_signals}) {message_name}{{{cpp_bus_name}, {self.message_id}, {message_size_bytes}, {self.cycle_time}, {signal_list}}};"
         return message_code
 
-    def as_cpp_receive_code(self, cpp_bus_name, naming_convention):
+    def as_cpp_receive_code(self, cpp_bus_name, naming_convention, message_name_override = None):
         """
         Return the C++ code that represents this message.
         It is returned in the format of:
@@ -275,7 +316,20 @@ class CANMessage:
         )
 
         message_name = self.get_cpp_message_name(cpp_bus_name, naming_convention)
-        message_code = f"RX_CAN_Message({num_signals}) {message_name}{{{cpp_bus_name}, {self.message_id}, {signal_list}}};"
+
+                # check if message_id is nan
+        if not self.message_id is str:
+            print(message_name)
+            print(self.message_id)
+
+        if message_name_override is not None:
+            message_name = message_name_override
+        
+        extended_id_flag_str = "true" if self.is_extended_id() else "false"
+
+
+
+        message_code = f"RX_CAN_Message({num_signals}) {message_name}{{{cpp_bus_name}, {self.message_id}, {extended_id_flag_str}, {self.get_message_size_bytes()}, {signal_list}}};"
        
         return message_code
 
@@ -446,7 +500,6 @@ class CANDatabase:
 
             # Get the last few bus columns, which specify which bus the message belongs to
             bus_columns = row[len(MANDATORY_COLUMNS):]
-            print(bus_columns)
 
             if not any(bus_columns):
                 # if no buses are specified, add the message to a default bus
@@ -454,7 +507,6 @@ class CANDatabase:
             else:
                 for i, bus in enumerate(bus_columns):
                     if bus:
-                        print(f"Adding message {message_name} to bus {self.can_buses[i].name}")
                         self.can_buses[i].add_message(self.messages[message_name])
 
 

@@ -7,6 +7,11 @@ def generate_can_code(db_file, naming_convention, output_file):
     # Ensure data has necessary columns and clean the data
     df = df.dropna(subset=['Message Name', 'Start Bit', 'Size (bits)', 'Factor', 'Offset'])
     df = df.drop(df.columns[df.columns.str.contains('unnamed', case = False)], axis = 1)
+
+    # replace any na values with ""
+    # this is because the parser code expects empty strings
+    df = df.fillna("")
+
     # Combine dataframes named columns with the rest of the values
     lists = [list(df.columns), *df.values.tolist()]
     db = CANDatabase(lists)
@@ -25,15 +30,18 @@ def generate_can_code(db_file, naming_convention, output_file):
         file_w_str += "#include <nfr_can/CAN_interface.hpp>\n\n"
         global_namespace = "dbc"
 
-        # create the CANBuses, in a str
+        # Provide namespace wrapper
+        file_w_str += f"namespace {global_namespace} {{ \n\n"
+
+        # create the can buses:
         for bus in buses:
             bus_name = bus.get_cpp_bus_name(naming_convention)
             # driver_name = convert_name_convention(f"{bus_name}_driver", naming_convention)
             # file_w_str += f"static ICAN {driver_name};\n"
             file_w_str += f"static CAN_Bus {bus_name};\n"
+        
+        file_w_str += "\n\n"
 
-        # Provide namespace wrapper
-        file_w_str += f"\nnamespace {global_namespace} {{ \n\n"
         for message in messages:
             # create a message namespace
             message_namespace_name =  convert_name_convention(message.message_name, naming_convention)
@@ -45,9 +53,19 @@ def generate_can_code(db_file, naming_convention, output_file):
                 file_w_str += f"{signal_str}\n"
 
             bus = buses[0].get_cpp_bus_name(naming_convention)
-            can_msg_str = message.as_cpp_receive_code(bus, naming_convention)
+            message_override_name = convert_name_convention("message", naming_convention)
+            can_msg_str = message.as_cpp_receive_code(bus, naming_convention, message_override_name)
             
             file_w_str += f"{can_msg_str}\n\n"
+
+            # now add some min & max values, if they exist for each signal
+            for signal in signals:
+                signal_str = signal.as_cpp_min_max_code(naming_convention)
+                if signal_str is None or signal_str == "":
+                    continue
+                file_w_str += f"{signal_str}\n"
+            
+            file_w_str += "\n"
             file_w_str += f"}}; // namespace {message_namespace_name}\n\n"
 
         file_w_str += f"}}; // namespace {global_namespace}"

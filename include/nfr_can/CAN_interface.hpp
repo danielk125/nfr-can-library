@@ -190,34 +190,37 @@ class CAN_Signal : public ICAN_Signal {
     RawSignalValue _sRawValue;
 };
 
-struct MsgKey {
+struct CAN_Message_ID {
     uint32_t id;
     bool extended;
 
-    friend bool operator==(const MsgKey& a, const MsgKey& b) {
+    friend bool operator==(const CAN_Message_ID& a, const CAN_Message_ID& b) {
         return a.id == b.id && a.extended == b.extended;
     }
 };
 
 struct MsgKeyHash {
-    size_t operator()(const MsgKey& k) const noexcept {
+    size_t operator()(const CAN_Message_ID& k) const noexcept {
         return (static_cast<size_t>(k.id) * 1315423911u) ^ static_cast<size_t>(k.extended);
     }
 };
 
 struct ICAN_Message {
     virtual ~ICAN_Message() = default;
-    virtual MsgKey key() const = 0;
+    virtual CAN_Message_ID get_id() const = 0;
     virtual uint8_t length() const = 0;
+    virtual uint8_t get_num_signals() const = 0;
 
     virtual void decode_from(const CAN_Frame& frame) = 0;
     virtual void encode_to_frame(CAN_Frame& frame) const = 0;
     virtual bool attach_rx_callback(std::function<void()> callback) = 0;
+
+    virtual ICAN_Signal* get_signal(uint8_t index) = 0;
 };
 
 class CAN_Bus {
     std::unique_ptr<ICAN> _can;
-    std::unordered_map<MsgKey, ICAN_Message*, MsgKeyHash> _rx_map;
+    std::unordered_map<CAN_Message_ID, ICAN_Message*, MsgKeyHash> _rx_map;
 
    public:
     CAN_Bus(std::unique_ptr<ICAN> can) : _can(std::move(can)) {
@@ -238,7 +241,7 @@ class CAN_Bus {
     }
 
     void register_message(ICAN_Message& msg) {
-        auto k = msg.key();
+        auto k = msg.get_id();
         auto [it, inserted] = _rx_map.emplace(k, &msg);
         if (!inserted) {
             throw std::runtime_error("Duplicate message key registered");
@@ -246,7 +249,7 @@ class CAN_Bus {
     }
 
     void unregister_message(ICAN_Message& msg) {
-        auto k = msg.key();
+        auto k = msg.get_id();
         auto it = _rx_map.find(k);
         if (it != _rx_map.end() && it->second == &msg) {
             _rx_map.erase(it);
@@ -278,7 +281,7 @@ class CAN_Bus {
 
         CAN_Frame rx_msg;
         while (_can->recv(rx_msg)) {
-            MsgKey k{rx_msg._id, rx_msg._extendedId};
+            CAN_Message_ID k{rx_msg._id, rx_msg._extendedId};
 
             auto it = _rx_map.find(k);
             if (it != _rx_map.end() && it->second) {
@@ -408,15 +411,22 @@ class CAN_Message : public ICAN_Message {
         }
     }
 
-    MsgKey key() const override {
+    CAN_Message_ID get_id() const override {
         return {_id, _extended};
     }
+
+    uint8_t get_num_signals() const override {
+        return num_signals;
+    }
+
     uint32_t id() {
         return _id;
     }
+
     uint8_t length() const override {
         return _length;
     }
+
     bool extended() {
         return _extended;
     }
@@ -462,6 +472,14 @@ class CAN_Message : public ICAN_Message {
             return true;
         } else {
             return false;
+        }
+    }
+
+    ICAN_Signal* get_signal(uint8_t index) override {
+        if (index < num_signals) {
+            return _signals[index].get();
+        } else {
+            return nullptr;
         }
     }
 
