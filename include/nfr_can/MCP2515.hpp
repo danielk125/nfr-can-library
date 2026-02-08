@@ -11,12 +11,6 @@ struct bitRateConfig {
     uint8_t cnf3;
 };
 
-enum class BaudRate {
-    kBaud1M = 1000000,
-    kBaud500K = 500000,
-    kBaud250K = 250000,
-    kBaud125k = 125000
-};
 
 class MCP2515 : public ICAN {
 private:
@@ -28,12 +22,9 @@ private:
 public:
     MCP2515(ISpi& spi, IGpio& cs, IClock& clock) : _spi(spi), _cs(cs), _clock(clock) {}
 
-    bool begin(const BaudRate baud);
-
+    bool init(const BaudRate baud) override;
     bool send(const CAN_Frame& msg) override;
-
     bool recv(CAN_Frame& msg) override;
-
     uint32_t time_ms() override;
 
     // debug

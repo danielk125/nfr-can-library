@@ -169,7 +169,7 @@ bool MCP2515::baudRateToCNF(BaudRate baud, bitRateConfig& out) {
     }
 }
 
-bool MCP2515::begin(const BaudRate baud) {
+bool MCP2515::init(const BaudRate baud) {
     bitRateConfig cfg;
     if (!baudRateToCNF(baud, cfg))
         return false;

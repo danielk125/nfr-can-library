@@ -123,9 +123,9 @@ class CANSignal:
         macro = "MakeSignalSigned" if not is_unsigned else "MakeSignalExp"
         signal_name = self.get_cpp_signal_name(naming_convention)
         if is_unsigned:
-            return f"CAN_Signal_{data_type.upper().removesuffix('_T')} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset});"
+            return f"CAN_Signal_{data_type.upper().removesuffix('_T')} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset}, true);"
         else:
-            return f"CAN_Signal_{data_type.upper().removesuffix('_T')} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset}, {not is_unsigned});"
+            return f"CAN_Signal_{data_type.upper().removesuffix('_T')} {signal_name} = {macro}({data_type}, {self.start_bit}, {self.bit_length}, {self.factor}, {self.offset}, false);"
 
     def as_cantools_representation(self):
         """
