@@ -17,15 +17,18 @@ public:
         pinMode(_pin, mode == GpioMode::G_OUTPUT ? OUTPUT : INPUT);
     }
 
-    void gpio_write(GpioLevel level) override {
-        if (_mode == GpioMode::G_INPUT || level == GpioLevel::G_UNDEF) return;
+    bool gpio_write(GpioLevel level) override {
+        if (_mode == GpioMode::G_INPUT || level == GpioLevel::G_UNDEF) return false;
 
         digitalWrite(_pin, level == GpioLevel::G_HIGH ? HIGH : LOW);
+
+        return true;
     }
 
-    GpioLevel gpio_read() override {
-        if (_mode == GpioMode::G_OUTPUT) return GpioLevel::G_UNDEF;
+    bool gpio_read(GpioLevel& out) override {
+        if (_mode == GpioMode::G_OUTPUT) return false
 
-        return digitalRead(_pin) ? GpioLevel::G_HIGH : GpioLevel::G_LOW;
+        out = digitalRead(_pin) ? GpioLevel::G_HIGH : GpioLevel::G_LOW;
+        return true;
     }
 };
