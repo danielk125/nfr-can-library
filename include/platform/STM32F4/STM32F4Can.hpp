@@ -2,7 +2,7 @@
 #define STM32F4CAN_HPP
 
 #include "../../nfr_can/ICAN.hpp"
-#include "stm32f405_hal_can.h"
+#include "stm32f4xx_hal_can.h"
 
 class STM32F4Can final : public ICAN {
 public:
@@ -36,12 +36,14 @@ public:
     _canFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
     _canFilterConfig.SlaveStartFilterBank = 14;
 
-    HAL_CAN_ConfigFilter(&_hcan, &_canFilterConfig);
+    status = HAL_CAN_ConfigFilter(&_hcan, &_canFilterConfig);
 
     // setup rx interrupt if we want it
     // HAL_CAN_ActivateNotification(&_hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
 
-    HAL_CAN_Start(&_hcan);
+    status = HAL_CAN_Start(&_hcan);
+
+    return (status == HAL_OK) ? true : false;
   }
 
   bool send(const CAN_Frame &msg) override {
