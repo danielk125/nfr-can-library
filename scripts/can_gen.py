@@ -49,7 +49,7 @@ def generate_can_code(
             bus_name = bus.get_cpp_bus_name(naming_convention)
             # driver_name = convert_name_convention(f"{bus_name}_driver", naming_convention)
             # file_w_str += f"static ICAN {driver_name};\n"
-            file_w_str += f"static CAN_Bus {bus_name};\n"
+            file_w_str += f"inline CAN_Bus {bus_name};\n"
 
         file_w_str += "\n\n"
 
@@ -63,7 +63,7 @@ def generate_can_code(
             signals = message.get_signals()
             for signal in signals:
                 signal_str = signal.as_cpp_code(naming_convention)
-                file_w_str += f"{signal_str}\n"
+                file_w_str += f"inline {signal_str}\n"
 
             bus = buses[0].get_cpp_bus_name(naming_convention)
             message_override_name = convert_name_convention(
@@ -73,7 +73,7 @@ def generate_can_code(
                 bus, naming_convention, message_override_name
             )
 
-            file_w_str += f"{can_msg_str}\n\n"
+            file_w_str += f"inline {can_msg_str}\n\n"
 
             # now add some min & max values, if they exist for each signal
             if generate_min_max:
@@ -113,7 +113,7 @@ def generate_can_code(
                         f'    {{ {{ {message.message_id}, {signal_num} }}, "{signal.signal_name}" }},\n'
                     )
                     signal_num += 1
-                    
+
             file_w_str += f"}};\n\n"
 
             file_w_str += f"}}; // namespace meta\n\n"

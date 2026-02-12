@@ -1,3 +1,6 @@
+#ifndef __CAN_INTERFACE_H__
+#define __CAN_INTERFACE_H__
+
 #include "ICAN.hpp"
 
 #include <cassert>
@@ -8,6 +11,7 @@
 #include <type_traits>
 #include <cstring>
 #include <stdexcept>
+#include <string>
 
 #include "virtual_timer.hpp"
 
@@ -49,6 +53,8 @@ struct ICAN_Signal {
     virtual void encode(std::array<uint8_t, 8>& data) const = 0;
 
     virtual ICAN_Signal_DataBuf toBuf() const = 0;
+
+    virtual std::string to_string() const = 0;
 };
 
 struct CAN_Signal_config {
@@ -75,7 +81,8 @@ class CAN_Signal : public ICAN_Signal {
           _offset(offset),
           _isSigned(isSigned),
           _endian(endian),
-          _sRawValue(0) {
+          _sRawValue() {
+        set(0);
     }
 
     CAN_Signal(CAN_Signal_config& cfg,
@@ -126,6 +133,10 @@ class CAN_Signal : public ICAN_Signal {
         dataBuf.data_length = length;
 
         return dataBuf;
+    }
+
+    std::string to_string() const override {
+        return std::to_string(get());
     }
 
     void set(T val) {
@@ -508,8 +519,6 @@ class CAN_Message : public ICAN_Message {
         return _last_recv_time;
     }
 
-
-
    private:
     CAN_Bus& _bus;
     uint32_t _id;
@@ -653,3 +662,5 @@ static inline int64_t signExtend(uint64_t raw, uint8_t length) {
 static inline uint64_t maskN(uint8_t n) {
     return (n == 64) ? ~0ULL : ((1ULL << n) - 1ULL);
 }
+
+#endif  // __CAN_INTERFACE_H__
