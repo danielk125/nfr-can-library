@@ -8,6 +8,9 @@ class STM32F4Can final : public ICAN {
 public:
   // TODO: hardcoded to 500k rn - make configurable later
   bool init(const BaudRate baudrate) override {
+    if (baudrate != BaudRate::kBaud500K) {
+      return false; // only supporting 500k for now
+    }
     _hcan.Instance = CAN1;
     _hcan.Init.Prescaler = 4;
     _hcan.Init.Mode = CAN_MODE_NORMAL;
@@ -57,6 +60,8 @@ public:
     // populate data
     auto status =
         HAL_CAN_AddTxMessage(&_hcan, &txHeader, msg._data.data(), &_txMailbox);
+
+    return (status == HAL_OK) ? true : false;
   }
 
   bool recv(CAN_Frame &msg) override;
