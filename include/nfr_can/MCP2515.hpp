@@ -1,3 +1,6 @@
+#ifndef __MCP2515_H__
+#define __MCP2515_H__
+
 #include "IClock.hpp"
 #include "IGpio.hpp"
 #include "ISpi.hpp"
@@ -113,3 +116,5 @@ private:
     static void packId(uint32_t id, bool extended, uint8_t& sidh, uint8_t& sidl, uint8_t& eid8, uint8_t& eid0);
     static void unpackId(uint8_t sidh, uint8_t sidl, uint8_t eid8, uint8_t eid0, uint32_t& id, bool& extended);
 };
+
+#endif // __MCP2515_H__

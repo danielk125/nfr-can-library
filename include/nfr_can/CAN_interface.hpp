@@ -333,7 +333,7 @@ class CAN_Message : public ICAN_Message {
     using enable_if_all_signals_t =
         std::enable_if_t<(is_shared_ptr_to_ican_signal<std::decay_t<Ts>>::value && ...), int>;
 
-    // Constructor for RX message with no callback
+    // Constructor for RX
     template <class... Ps, enable_if_all_signals_t<Ps...> = 0>
     CAN_Message(CAN_Bus& bus, uint32_t id, bool extended, uint8_t length, Ps&&... signals)
         : CAN_Message(bus,
