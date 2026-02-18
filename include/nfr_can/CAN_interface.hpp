@@ -239,6 +239,16 @@ class CAN_Bus {
     CAN_Bus() : _can(nullptr) {
     }
 
+    std::vector<ICAN_Message*> get_messages() {
+        std::vector<ICAN_Message*> messagePtrs;
+
+        for (const auto& [key, value] : _rx_map) {
+            messagePtrs.push_back(value);
+        }
+
+        return messagePtrs;
+    }
+
     bool init(const BaudRate baud) {
         if (_can) {
             return _can->init(baud);
