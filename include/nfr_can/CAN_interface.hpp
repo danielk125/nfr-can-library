@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <cstdint>
 #include <unordered_map>
 #include <memory>
 #include <functional>
@@ -45,6 +46,9 @@ struct ICAN_Signal_DataBuf {
     uint8_t data_length;
 };
 
+
+enum class SignalType { INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, UINT64, FLOAT, BOOL };
+
 struct ICAN_Signal {
     virtual ~ICAN_Signal() = default;
 
@@ -55,6 +59,8 @@ struct ICAN_Signal {
     virtual ICAN_Signal_DataBuf toBuf() const = 0;
 
     virtual std::string to_string() const = 0;
+
+    virtual SignalType getSignalType() = 0;
 };
 
 struct CAN_Signal_config {
@@ -65,6 +71,8 @@ struct CAN_Signal_config {
     bool isSigned = false;
     Endianness endian = Endianness::littleEndian;
 };
+
+
 
 template <typename T>
 class CAN_Signal : public ICAN_Signal {
@@ -188,6 +196,32 @@ class CAN_Signal : public ICAN_Signal {
             insertRawBE(data, _startBit, _length, rawU);
         else
             insertRawLE(data, _startBit, _length, rawU);
+    }
+
+    SignalType getSignalType() {
+        if (typeid(T) == typeid(int8_t)) {
+            return SignalType::INT8;
+        } else if (typeid(T) == typeid(int16_t)) {
+            return SignalType::INT16;
+        } else if (typeid(T) == typeid(int32_t)) {
+            return SignalType::INT32;
+        } else if (typeid(T) == typeid(int64_t)) {
+            return SignalType::INT64;
+        } else if (typeid(T) == typeid(uint8_t)) {
+            return SignalType::UINT8;
+        } else if (typeid(T) == typeid(uint16_t)) {
+            return SignalType::UINT16;
+        } else if (typeid(T) == typeid(uint32_t)) {
+            return SignalType::UINT32;
+        } else if (typeid(T) == typeid(uint64_t)) {
+            return SignalType::UINT64;
+        } else if (typeid(T) == typeid(float)) {
+            return SignalType::FLOAT;
+        } else if (typeid(T) == typeid(bool)) {
+            return SignalType::BOOL;
+        } else {
+            throw std::runtime_error("Unexpected Signal type.");
+        }
     }
 
    private:
