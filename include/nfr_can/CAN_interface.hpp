@@ -61,6 +61,8 @@ struct ICAN_Signal {
     virtual std::string to_string() const = 0;
 
     virtual SignalType getSignalType() = 0;
+
+    virtual void set(SignalType type, void *data) = 0;
 };
 
 struct CAN_Signal_config {
@@ -147,6 +149,10 @@ class CAN_Signal : public ICAN_Signal {
         return std::to_string(get());
     }
 
+    void set(SignalType type, void *val) {
+        _sValue = *static_cast<T*>(val);
+    }
+
     void set(T val) {
         _sValue = val;
     }
@@ -198,7 +204,7 @@ class CAN_Signal : public ICAN_Signal {
             insertRawLE(data, _startBit, _length, rawU);
     }
 
-    SignalType getSignalType() {
+    SignalType getSignalType() override {
         if (typeid(T) == typeid(int8_t)) {
             return SignalType::INT8;
         } else if (typeid(T) == typeid(int16_t)) {
@@ -327,6 +333,11 @@ class CAN_Bus {
         }
 
         return _can->time_ms();
+    }
+
+    ICAN_Message *get_message_from_id(uint32_t id) {
+        CAN_Message_ID msgId { id, false };
+        return _rx_map.at(msgId);
     }
 
     void tick_bus() {
