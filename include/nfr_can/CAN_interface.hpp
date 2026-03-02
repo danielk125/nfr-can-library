@@ -149,7 +149,7 @@ class CAN_Signal : public ICAN_Signal {
         return std::to_string(get());
     }
 
-    void set(SignalType type, void *val) {
+    void set(SignalType type, void *val) override {
         _sValue = *static_cast<T*>(val);
     }
 
