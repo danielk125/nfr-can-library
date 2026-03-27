@@ -1,6 +1,8 @@
 #ifndef ICAN_HPP
 #define ICAN_HPP
+
 #include <array>
+#include <cstdint>
 
 struct CAN_Frame {
     uint32_t _id{};
