@@ -7,6 +7,7 @@
 #include "../include/platform/ESP/ESPGpio.hpp"
 #include "../include/platform/ESP/ESPSpi.hpp"
 
+#define NUM_THREADS 4
 
 ESPSpi spi(1000000);
 ESPGpio gpio(SS, GpioMode::G_OUTPUT);
@@ -85,7 +86,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   group.Tick(millis());
-  drive_bus.tick_bus();
+  drive_bus.parallel_tick_bus(NUM_THREADS);
   mcp2515.updateMissCounter();
 }
 

@@ -13,6 +13,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <string>
+#include <pthread.h>
 
 #include "virtual_timer.hpp"
 
@@ -272,6 +273,7 @@ struct ICAN_Message {
 class CAN_Bus {
     std::unique_ptr<ICAN> _can;
     std::unordered_map<CAN_Message_ID, ICAN_Message*, MsgKeyHash> _rx_map;
+    pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
 
    public:
     CAN_Bus(std::unique_ptr<ICAN> can) : _can(std::move(can)) {
@@ -340,13 +342,34 @@ class CAN_Bus {
         return _rx_map.at(msgId);
     }
 
+private:
+
+    bool atomic_recv(CAN_Frame& msg) {
+        if (!_can) {
+            return false;
+        } 
+
+        bool res = false;
+        pthread_mutex_lock(&_mutex);
+        res = _can->recv(msg);
+        pthread_mutex_unlock(&_mutex);
+        return res;
+    }
+
+    static void* _tick_bus_entry(void* arg) {
+        static_cast<CAN_Bus*>(arg)->tick_bus();
+        return nullptr;
+    }
+
+public:
+
     void tick_bus() {
         if (!_can) {
             return;
         }
 
         CAN_Frame rx_msg;
-        while (_can->recv(rx_msg)) {
+        while (atomic_recv(rx_msg)) {
             CAN_Message_ID k{rx_msg._id, rx_msg._extendedId};
 
             auto it = _rx_map.find(k);
@@ -355,6 +378,19 @@ class CAN_Bus {
             }
         }
     }
+
+    void parallel_tick_bus(int num_threads) {
+        if (!_can) return;
+
+        std::vector<pthread_t> threads(num_threads);
+        for (int i = 0; i < num_threads; i++) {
+            pthread_create(&threads[i], nullptr, _tick_bus_entry, this);
+        }
+        for (int i = 0; i < num_threads; i++) {
+            pthread_join(threads[i], nullptr);
+        }
+    }
+    
 };
 
 struct RX_can_msg_config {
@@ -374,7 +410,7 @@ struct TX_can_msg_config {
     VirtualTimerGroup& timerGroup;
 };
 
-template <size_t num_signals, bool RX>  // add bool for rx
+template <size_t num_signals, bool RX>
 class CAN_Message : public ICAN_Message {
    public:
     template <class>
@@ -499,6 +535,8 @@ class CAN_Message : public ICAN_Message {
 
     void decode_from(const CAN_Frame& frame) override {
         if constexpr (RX) {
+            pthread_mutex_lock(&_mutex);
+
             std::array<uint8_t, 8> data = frame._data;
 
             uint64_t tmp = 0;
@@ -514,6 +552,8 @@ class CAN_Message : public ICAN_Message {
             }
 
             _last_recv_time = _bus.get_time();
+
+            pthread_mutex_unlock(&_mutex);
         }
     }
 
@@ -543,7 +583,8 @@ class CAN_Message : public ICAN_Message {
 
     ICAN_Signal* get_signal(uint8_t index) override {
         if (index < num_signals) {
-            return _signals[index].get();
+            ICAN_Signal* res = _signals[index].get();
+            return res;
         } else {
             return nullptr;
         }
@@ -581,6 +622,7 @@ class CAN_Message : public ICAN_Message {
     bool _extended;
     std::function<void(void)> _callback_function;
     std::array<std::shared_ptr<ICAN_Signal>, num_signals> _signals;
+    pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
 
     uint32_t _last_recv_time;
     uint64_t _raw;
