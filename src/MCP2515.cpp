@@ -207,12 +207,16 @@ bool MCP2515::init(const BaudRate baud) {
     if (!writeRegister(REG_CNF3, cfg.cnf3))
         return false;
 
-    // Accept all messages into RXB0 (RXM1:RXM0 = 11)
-    if (!writeRegister(REG_RXB0CTRL, 0x60))
+    // Accept all messages into RXB0 (RXM1:RXM0 = 11) and rollover into RX1
+    if (!writeRegister(REG_RXB0CTRL, 0x64))
         return false;
 
-    // Enable RX0 interrupt (RX0IE = bit0)
-    if (!writeRegister(REG_CANINTE, 0x01))
+    // Accept messages into RX1
+    if (!writeRegister(REG_RXB1CTRL, 0x60))
+        return false;
+
+    // Enable RX0 nd RX1 interrupt (RX0IE = bit0)
+    if (!writeRegister(REG_CANINTE, 0x03))
         return false;
 
     // Clear interrupt flags
@@ -370,12 +374,24 @@ bool MCP2515::recv(CAN_Frame& msg) {
     if (!readRegister(REG_CANINTF, intf))
         return false;
 
-    if ((intf & CANINTF_RX0IF) == 0) {
-        return false;
-    }
+    // Determine which buffer has a pending message                                                      
+    uint8_t regSIDH, regDLC, regD0, clearBit;
+    if (intf & CANINTF_RX0IF) {                                                                          
+        regSIDH  = REG_RXB0SIDH;
+        regDLC   = REG_RXB0DLC;                                                                          
+        regD0    = REG_RXB0D0;
+        clearBit = CANINTF_RX0IF;                                                                        
+    } else if (intf & CANINTF_RX1IF) {                                                                   
+        regSIDH  = REG_RXB1SIDH;
+        regDLC   = REG_RXB1DLC;                                                                          
+        regD0    = REG_RXB1D0;
+        clearBit = CANINTF_RX1IF;                                                                        
+    } else {
+        return false;                                                                                    
+    }      
 
     uint8_t hdr[5] = {0};
-    if (!readRegisters(REG_RXB0SIDH, hdr, 5))
+    if (!readRegisters(regSIDH, hdr, 5))
         return false;
 
     const uint8_t sidh = hdr[0];
@@ -394,7 +410,7 @@ bool MCP2515::recv(CAN_Frame& msg) {
     // write to buffer
     uint8_t buf[8];
     if (msg._length > 0) {
-        if (!readRegisters(REG_RXB0D0, buf, msg._length))
+        if (!readRegisters(regD0, buf, msg._length))
             return false;
     }
 
@@ -404,7 +420,7 @@ bool MCP2515::recv(CAN_Frame& msg) {
     }
 
     // CANINTF bits are cleared by writing 0 to the bit
-    if (!bitModify(REG_CANINTF, CANINTF_RX0IF, 0x00))
+    if (!bitModify(REG_CANINTF, clearBit, 0x00))
         return false;
 
     recvCount++;
