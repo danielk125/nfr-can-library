@@ -206,10 +206,26 @@ bool MCP2515::init(const BaudRate baud) {
         return false;
     if (!writeRegister(REG_CNF3, cfg.cnf3))
         return false;
+    // --- RXB0 filter: accept 0x200–0x20F ---                                                           
+    // Mask RXM0: check upper 7 bits of standard ID (0x7F0)
+    uint8_t mSidh, mSidl, mEid8, mEid0;                                                                  
+    packId(0x7F0, false, mSidh, mSidl, mEid8, mEid0);                                                    
+    if (!writeRegister(0x20, mSidh)) return false;  // RXM0SIDH
+    if (!writeRegister(0x21, mSidl)) return false;  // RXM0SIDL                                          
+    if (!writeRegister(0x22, 0x00))  return false;  // RXM0EID8
+    if (!writeRegister(0x23, 0x00))  return false;  // RXM0EID0                                          
+                                                    
+    // Filter RXF0: match 0x200                                                                          
+    uint8_t fSidh, fSidl, fEid8, fEid0;               
+    packId(0x200, false, fSidh, fSidl, fEid8, fEid0);                                                    
+    if (!writeRegister(0x00, fSidh)) return false;  // RXF0SIDH                                          
+    if (!writeRegister(0x01, fSidl)) return false;  // RXF0SIDL
+    if (!writeRegister(0x02, 0x00))  return false;  // RXF0EID8                                          
+    if (!writeRegister(0x03, 0x00))  return false;  // RXF0EID0                                          
 
-    // Accept all messages into RXB0 (RXM1:RXM0 = 11) and rollover into RX1
-    if (!writeRegister(REG_RXB0CTRL, 0x64))
-        return false;
+    // RXB0: filtering enabled (RXM=00) + rollover into RXB1 (BUKT)                                      
+    if (!writeRegister(REG_RXB0CTRL, 0x04))           
+        return false;    
 
     // Accept messages into RX1
     if (!writeRegister(REG_RXB1CTRL, 0x60))
