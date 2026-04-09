@@ -208,9 +208,9 @@ bool MCP2515::init(const BaudRate baud) {
         return false;
     
     // --- RXB0 filter: accept 0x200–0x20F ---                                                           
-    // Mask RXM0: check upper 7 bits of standard ID (0x7F0) (Basically bottom hexit is ignored)
+    // Mask RXM0: check upper 7 bits of standard ID (0x7E0) (Basically bits 0-4 are ignored)
     uint8_t mSidh, mSidl, mEid8, mEid0;                                                                  
-    packId(0x7F0, false, mSidh, mSidl, mEid8, mEid0);                                      
+    packId(0x7E0, false, mSidh, mSidl, mEid8, mEid0);                                      
     if (!writeRegister(REG_RXM0SIDH, mSidh)) return false;
     if (!writeRegister(REG_RXM0SIDL, mSidl)) return false;                   
     if (!writeRegister(REG_RXM0EID8, 0x00))  return false;
