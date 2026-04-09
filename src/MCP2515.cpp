@@ -208,21 +208,21 @@ bool MCP2515::init(const BaudRate baud) {
         return false;
     
     // --- RXB0 filter: accept 0x200–0x20F ---                                                           
-    // Mask RXM0: check upper 7 bits of standard ID (0x7F0)
+    // Mask RXM0: check upper 7 bits of standard ID (0x7F0) (Basically bottom hexit is ignored)
     uint8_t mSidh, mSidl, mEid8, mEid0;                                                                  
-    packId(0x7F0, false, mSidh, mSidl, mEid8, mEid0);                                                    
-    if (!writeRegister(0x20, mSidh)) return false;  // RXM0SIDH
-    if (!writeRegister(0x21, mSidl)) return false;  // RXM0SIDL                                          
-    if (!writeRegister(0x22, 0x00))  return false;  // RXM0EID8
-    if (!writeRegister(0x23, 0x00))  return false;  // RXM0EID0                                          
+    packId(0x7F0, false, mSidh, mSidl, mEid8, mEid0);                                      
+    if (!writeRegister(REG_RXM0SIDH, mSidh)) return false;
+    if (!writeRegister(REG_RXM0SIDL, mSidl)) return false;                   
+    if (!writeRegister(REG_RXM0EID8, 0x00))  return false;
+    if (!writeRegister(REG_RXM0EID0, 0x00))  return false;
                                                     
     // Filter RXF0: match 0x200                                                                          
     uint8_t fSidh, fSidl, fEid8, fEid0;               
-    packId(0x200, false, fSidh, fSidl, fEid8, fEid0);                                                    
-    if (!writeRegister(0x00, fSidh)) return false;  // RXF0SIDH                                          
-    if (!writeRegister(0x01, fSidl)) return false;  // RXF0SIDL
-    if (!writeRegister(0x02, 0x00))  return false;  // RXF0EID8                                          
-    if (!writeRegister(0x03, 0x00))  return false;  // RXF0EID0                                          
+    packId(0x200, false, fSidh, fSidl, fEid8, fEid0);
+    if (!writeRegister(REG_RXF0SIDH, fSidh)) return false;
+    if (!writeRegister(REG_RXF0SIDL, fSidl)) return false;
+    if (!writeRegister(REG_RXF0EID8, 0x00))  return false;                                      
+    if (!writeRegister(REG_RXF0EID0, 0x00))  return false;              
 
     // RXB0: filtering enabled (RXM=00) + rollover into RXB1 (BUKT)                                      
     if (!writeRegister(REG_RXB0CTRL, 0x04))           
