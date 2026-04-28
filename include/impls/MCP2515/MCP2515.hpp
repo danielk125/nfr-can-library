@@ -1,10 +1,10 @@
 #ifndef __MCP2515_H__
 #define __MCP2515_H__
 
-#include "IClock.hpp"
-#include "IGpio.hpp"
-#include "ISpi.hpp"
-#include "ICAN.hpp"
+#include "../../nfr_can/IClock.hpp"
+#include "../../nfr_can/IGpio.hpp"
+#include "../../nfr_can/ISpi.hpp"
+#include "../../nfr_can/ICAN.hpp"
 
 #include <string>
 

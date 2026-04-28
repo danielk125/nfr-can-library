@@ -12,6 +12,8 @@ struct CAN_Frame {
 
     CAN_Frame() = default;
 
+
+    // change the naming of some of these vars
     CAN_Frame(uint32_t id, uint8_t length, std::array<uint8_t, 8> data, bool extended)
         : _id(id), _length(length), _data(data), _extendedId(extended) {
     }
@@ -21,7 +23,8 @@ enum class BaudRate {
     kBaud1M = 1000000,
     kBaud500K = 500000,
     kBaud250K = 250000,
-    kBaud125k = 125000
+    kBaud125k = 125000,
+    NONE = 0
 };
 
 struct ICAN {
