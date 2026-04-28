@@ -355,6 +355,10 @@ class CAN_Bus {
             }
         }
     }
+
+    ICAN *get_driver() {
+        return _can.get();
+    }
 };
 
 struct RX_can_msg_config {
@@ -628,6 +632,7 @@ using CAN_Signal_INT32 = std::shared_ptr<CAN_Signal<int32_t>>;
 using CAN_Signal_INT64 = std::shared_ptr<CAN_Signal<int64_t>>;
 using CAN_Signal_FLOAT = std::shared_ptr<CAN_Signal<float>>;
 using CAN_Signal_BOOL = std::shared_ptr<CAN_Signal<bool>>;
+using CAN_Signal_DOUBLE = std::shared_ptr<CAN_Signal<double>>;
 
 // Bit helper definitions
 

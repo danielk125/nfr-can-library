@@ -67,10 +67,27 @@ private:
     static constexpr uint8_t REG_RXB0SIDL  = 0x62;
     static constexpr uint8_t REG_RXB0EID8  = 0x63;
     static constexpr uint8_t REG_RXB0EID0  = 0x64;
+    static constexpr uint8_t REG_RXM0SIDH  = 0x20;
+    static constexpr uint8_t REG_RXM0SIDL  = 0x21;                                         
+    static constexpr uint8_t REG_RXM0EID8  = 0x22;
+    static constexpr uint8_t REG_RXM0EID0  = 0x23; 
+    static constexpr uint8_t REG_RXF0SIDH  = 0x00;                                   
+    static constexpr uint8_t REG_RXF0SIDL  = 0x01;
+    static constexpr uint8_t REG_RXF0EID8  = 0x02;                                  
+    static constexpr uint8_t REG_RXF0EID0  = 0x03;
     static constexpr uint8_t REG_RXB0DLC   = 0x65;
     static constexpr uint8_t REG_RXB0D0    = 0x66;
     static constexpr uint8_t REG_EFLG      = 0x2D;
     static constexpr uint8_t REG_TXRTSCTRL = 0x0D;
+
+    static constexpr uint8_t REG_RXB1CTRL  = 0x70;
+    static constexpr uint8_t REG_RXB1SIDH  = 0x71;
+    static constexpr uint8_t REG_RXB1SIDL  = 0x72;
+    static constexpr uint8_t REG_RXB1EID8  = 0x73;
+    static constexpr uint8_t REG_RXB1EID0  = 0x74;
+    static constexpr uint8_t REG_RXB1DLC   = 0x75;
+    static constexpr uint8_t REG_RXB1D0    = 0x76;
+    static constexpr uint8_t CANINTF_RX1IF = 0x02;
 
     static constexpr uint8_t REG_TEC    = 0x1C;
     static constexpr uint8_t REG_REC    = 0x1D;
