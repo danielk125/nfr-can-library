@@ -392,16 +392,34 @@ class CAN_Message : public ICAN_Message {
     using enable_if_all_signals_t =
         std::enable_if_t<(is_shared_ptr_to_ican_signal<std::decay_t<Ts>>::value && ...), int>;
 
-    // Constructor for RX
-    template <class... Ps, enable_if_all_signals_t<Ps...> = 0>
+    // Constructor for RX w/o a callback
+    template <bool IsRX = RX,
+              class... Ps,
+              enable_if_all_signals_t<Ps...> = 0,
+              std::enable_if_t<IsRX, int> = 0>
     CAN_Message(CAN_Bus& bus, uint32_t id, bool extended, uint8_t length, Ps&&... signals)
         : CAN_Message(bus,
                       id,
                       extended,
                       length,
-                      std::function<void()>{},  // default to void
+                      std::function<void()>{},
                       std::forward<Ps>(signals)...) {
-        static_assert(RX, "TX constructor called for RX message!");
+        _bus.register_message(*this);
+    }
+
+    // Constructor for TX message without periodic transmit timer
+    template <bool IsRX = RX,
+                class... Ps,
+                enable_if_all_signals_t<Ps...> = 0,
+                std::enable_if_t<!IsRX, int> = 0>
+    CAN_Message(CAN_Bus& bus, uint32_t id, bool extended, uint8_t length, Ps&&... signals)
+        : _bus(bus),
+            _id(id),
+            _extended(extended),
+            _length(length),
+            _signals{std::static_pointer_cast<ICAN_Signal>(std::forward<Ps>(signals))...},
+            _last_recv_time(0) {
+        static_assert(sizeof...(signals) == num_signals, "wrong number of signals");
     }
 
     // Constructor for RX message with callback
