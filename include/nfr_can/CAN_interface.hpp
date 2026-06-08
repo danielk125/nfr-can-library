@@ -404,7 +404,6 @@ class CAN_Message : public ICAN_Message {
                       length,
                       std::function<void()>{},
                       std::forward<Ps>(signals)...) {
-        _bus.register_message(*this);
     }
 
     // Constructor for TX message without periodic transmit timer
